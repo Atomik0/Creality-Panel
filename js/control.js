@@ -50,7 +50,7 @@ document.querySelectorAll("[data-heat]").forEach(b => b.onclick = () => {
   if (!isFinite(v) || v < 0) return toast("Temperatura no válida", true);
   const heater = b.dataset.heat;
   act(() => gcode(`SET_HEATER_TEMPERATURE HEATER=${heater} TARGET=${v}`),
-      `${heater === "extruder" ? "Boquilla" : "Cama"} → ${v ? v + " °C" : "apagada"}`);
+    `${heater === "extruder" ? "Boquilla" : "Cama"} → ${v ? v + " °C" : "apagada"}`);
 });
 
 function bindSlider(name, cmd) {
@@ -61,8 +61,8 @@ function bindSlider(name, cmd) {
 bindSlider("spd", v => `M220 S${v}`);
 bindSlider("flow", v => `M221 S${v}`);
 bindSlider("fan", v => HW.fanKind === "fan" ? `M106 S${Math.round(v * 2.55)}`
-                     : HW.fanKind === "pin" ? `M106 P0 S${Math.round(v * 2.55)}`
-                     : `SET_FAN_SPEED FAN=${pinName(HW.fan || "x model_fan")} SPEED=${(v / 100).toFixed(2)}`);
+  : HW.fanKind === "pin" ? `M106 P0 S${Math.round(v * 2.55)}`
+    : `SET_FAN_SPEED FAN=${pinName(HW.fan || "x model_fan")} SPEED=${(v / 100).toFixed(2)}`);
 document.querySelectorAll("[data-z]").forEach(b => b.onclick = () =>
   act(() => gcode(`SET_GCODE_OFFSET Z_ADJUST=${b.dataset.z} MOVE=1`), `Offset Z ${b.dataset.z}`));
 
@@ -93,7 +93,7 @@ $("extrude").onclick = () => extrudeMm(eStep, 300);
 $("retract").onclick = () => extrudeMm(-eStep, 1200);
 
 let estopArm = null;
-const estopReset = () => { clearTimeout(estopArm); estopArm = null; $("estopBtn").classList.remove("armed"); $("estopBtn").textContent = "PARADA"; };
+const estopReset = () => { clearTimeout(estopArm); estopArm = null; $("estopBtn").classList.remove("armed"); $("estopBtn").textContent = "PANIC BUTTON"; };
 $("estopBtn").onclick = async () => {
   if (!estopArm) {
     $("estopBtn").classList.add("armed"); $("estopBtn").textContent = "¿Seguro? Pulsa otra vez";

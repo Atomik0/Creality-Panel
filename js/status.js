@@ -53,7 +53,11 @@ async function doPoll() {
   }
   const layerTxt = active ? `${layer}${totalLayers ? " / " + totalLayers : ""}` : "—";
   $("layer").textContent = layerTxt; $("camLayer").textContent = layerTxt;
-  $("fil").textContent = active ? (ps.filament_used / 1000).toFixed(2) + " m" : "—";
+  const shown = active || state === "complete";
+  const usedMm = ps.filament_used || 0, totMm = meta && meta.filament_total, totG = meta && meta.filament_weight_total;
+  $("fil").textContent = shown ? `${(usedMm / 1000).toFixed(2)}${totMm ? " / " + (totMm / 1000).toFixed(2) : ""} m` : "—";
+  $("weight").textContent = !shown || !totG ? "—"
+    : totMm ? `${(totG * Math.min(usedMm, totMm) / totMm).toFixed(1)} / ${totG.toFixed(1)} g` : `${totG.toFixed(1)} g al final`;
   $("spd").textContent = Math.round(gm.speed_factor * 100) + " %";
   $("mat").textContent = meta ? (meta.filament_type || "—").split(";").filter((v, i, a) => a.indexOf(v) === i).join(" + ") : "—";
   $("camInfo").hidden = !active;
