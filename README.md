@@ -8,7 +8,7 @@ No necesita instalación ni compilación: son archivos HTML, CSS y JavaScript qu
 
 ## Funciones
 
-- **Trabajo actual:** progreso, capa, tiempo transcurrido y restante, hora estimada de fin, filamento usado y miniatura del modelo. Pausar, reanudar y cancelar.
+- **Trabajo actual:** progreso, capa, tiempo transcurrido y restante, hora estimada de fin, filamento consumido frente al total y peso actual frente al peso final de la pieza, y miniatura del modelo. Pausar, reanudar y cancelar.
 - **Cámara:** vídeo en directo por WebRTC (la cámara de Creality) o por una URL MJPEG, con captura de imagen, pantalla completa y botón de luz.
 - **Control:** temperaturas de boquilla y cama con preajustes para PLA, PETG y ABS, gráfica de los últimos 10 minutos, velocidad, flujo, ventilador, ajuste fino del offset Z, movimiento de ejes, home y extrusión manual.
 - **Parada de emergencia:** hay que pulsarla dos veces en 3 segundos, para que un toque accidental no detenga una impresión. Si Klipper se cae, aparece un aviso con botones para reiniciar el firmware, Klipper o el servicio.
@@ -161,4 +161,4 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=2`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=3`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
