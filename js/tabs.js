@@ -60,7 +60,7 @@ async function loadTimelapses() {
     d.className = "tl";
     d.innerHTML = `<video controls preload="metadata" src="${esc(url)}"></video>
       <div class="info"><div class="n"></div><div class="muted" style="font-size:12px"></div>
-      <a style="color:var(--accent);font-size:13px" target="_blank" rel="noopener">Abrir / descargar</a></div>`;
+      <a target="_blank" rel="noopener">Abrir / descargar</a></div>`;
     const name = t.gcodename || file;
     d.querySelector(".n").textContent = name; d.querySelector(".n").title = name;
     const parts = [];
@@ -177,8 +177,8 @@ document.addEventListener("click", e => {
 $("lbClose").onclick = closeLightbox;
 $("lightbox").onclick = e => { if (e.target === $("lightbox")) closeLightbox(); };
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    closeLightbox(); $("slotModal").classList.remove("on"); $("settingsModal").classList.remove("on");
-    if (confirmDone) confirmDone(false);
-  }
+  if (e.key !== "Escape") return;
+  if (confirmDone) return confirmDone(false);
+  closeLightbox();
+  ["slotModal", "settingsModal", "printerModal", "scanModal"].forEach(id => $(id).classList.remove("on"));
 });

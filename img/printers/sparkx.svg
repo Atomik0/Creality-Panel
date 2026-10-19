@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="585 150 685 722">
+  <defs>
+    <linearGradient id="alu" x1="0" x2="1"><stop offset="0" stop-color="#bfc0c1"/><stop offset=".35" stop-color="#e6e6e6"/><stop offset=".8" stop-color="#d6d6d6"/><stop offset="1" stop-color="#a9aaab"/></linearGradient>
+    <linearGradient id="alutop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9e9e9"/><stop offset=".7" stop-color="#d4d4d4"/><stop offset="1" stop-color="#8a8b89"/></linearGradient>
+    <linearGradient id="wht" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfbfb"/><stop offset="1" stop-color="#e2e2e3"/></linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f4"/><stop offset=".85" stop-color="#e3e3e3"/><stop offset="1" stop-color="#cfcfcf"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b3a57c"/><stop offset=".6" stop-color="#9a8c66"/><stop offset="1" stop-color="#857756"/></linearGradient>
+    <linearGradient id="rgb" gradientUnits="userSpaceOnUse" x1="787" y1="0" x2="1085" y2="0"><stop offset="0" stop-color="#8e5cff"/><stop offset=".22" stop-color="#3d7bff"/><stop offset=".45" stop-color="#1ec85a"/><stop offset=".7" stop-color="#f5c524"/><stop offset=".85" stop-color="#f58a24"/><stop offset="1" stop-color="#f04a4f"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3f3c"/><stop offset=".5" stop-color="#232724"/><stop offset="1" stop-color="#151816"/></linearGradient>
+    <linearGradient id="feeder" x1="0" x2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset=".35" stop-color="#5a5a5a"/><stop offset=".6" stop-color="#3a3a3a"/><stop offset="1" stop-color="#1f1f1f"/></linearGradient>
+    <linearGradient id="tint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1c1f" stop-opacity=".7"/><stop offset=".25" stop-color="#1a1c1f" stop-opacity=".45"/><stop offset="1" stop-color="#1a1c1f" stop-opacity=".5"/></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".4" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <pattern id="fiber" width="5" height="10" patternUnits="userSpaceOnUse"><rect width="1.4" height="10" fill="#000" opacity=".22"/></pattern>
+    <path id="cm" fill-rule="evenodd" d="M0.548 0.001 0.510 0.017 0.485 0.045 0.010 0.917 0.001 0.935 0.000 0.956 0.010 0.980 0.020 0.990 0.037 0.999 0.063 0.999 0.481 0.827 0.520 0.816 0.578 0.813 0.617 0.818 0.648 0.827 1.065 0.999 1.091 0.999 1.106 0.991 1.123 0.970 1.127 0.948 1.124 0.931 1.115 0.913 0.641 0.042 0.620 0.020 0.605 0.010 0.583 0.001ZM0.558 0.248 0.544 0.253 0.527 0.275 0.343 0.652 0.334 0.679 0.336 0.687 0.345 0.697 0.362 0.699 0.503 0.619 0.533 0.609 0.569 0.607 0.598 0.610 0.624 0.619 0.765 0.698 0.781 0.697 0.791 0.688 0.793 0.677 0.790 0.665 0.598 0.270 0.581 0.251Z"/>
+  </defs>
+  <ellipse cx="935" cy="860" rx="300" ry="9" fill="#000" opacity=".28"/>
+  <path d="M626 420 C 616 300, 640 196, 760 182 C 880 170, 924 236, 932 330" fill="none" stroke="#363538" stroke-width="6"/>
+  <path d="M933 330 C 930 250, 960 190, 1040 175" fill="none" stroke="#c8ccd0" stroke-width="5"/>
+  <path d="M628 525 C 632 620, 622 700, 640 760 C 652 795, 690 800, 730 798" fill="none" stroke="#363538" stroke-width="6"/>
+  <rect x="685" y="240" width="56" height="576" fill="url(#alu)"/>
+  <rect x="735" y="240" width="6" height="576" fill="#9a9a9a"/>
+  <rect x="685" y="760" width="56" height="56" fill="#55585a"/>
+  <rect x="1117" y="240" width="54" height="596" fill="url(#alu)"/>
+  <rect x="1117" y="240" width="7" height="596" fill="#7a7a7a"/>
+  <rect x="741" y="218" width="376" height="27" fill="url(#alutop)"/>
+  <path d="M683 246 V232 Q683 215 700 215 H742 V246 Z" fill="#606264"/>
+  <path d="M1172 246 V232 Q1172 215 1155 215 H1115 V246 Z" fill="#606264"/>
+  <rect x="1115" y="505" width="72" height="27" rx="4" fill="#434343"/>
+  <rect x="1150" y="511" width="22" height="14" rx="2" fill="#e8e8e8"/>
+  <rect x="668" y="424" width="502" height="36" fill="#a6a6a6"/>
+  <rect x="668" y="436" width="502" height="5" fill="#dcdcdc"/>
+  <rect x="668" y="442" width="502" height="13" fill="#3c3c3a"/>
+  <rect x="668" y="455" width="502" height="5" fill="#cfcfcf"/>
+  <rect x="1166" y="421" width="56" height="41" rx="7" fill="url(#wht)" stroke="#cfcfcf" stroke-width="1.5"/>
+  <path d="M668 424 V398 Q668 390 676 390 H704 Q712 390 712 398 V424 Z" fill="url(#wht)" stroke="#cfcfcf" stroke-width="1.5"/>
+  <rect x="597" y="418" width="71" height="107" rx="6" fill="url(#wht)" stroke="#c8c8c8" stroke-width="1.5"/>
+  <text x="632" y="452" font-family="sans-serif" font-size="32" font-weight="300" fill="#4a4a4a" text-anchor="middle">i7</text>
+  <text x="632" y="468" font-family="sans-serif" font-size="10" font-weight="700" letter-spacing="1.2" fill="#4a4a4a" text-anchor="middle">SPARKX</text>
+  <text x="632" y="477" font-family="sans-serif" font-size="4.6" fill="#8a8a8a" text-anchor="middle">Powered by Creality</text>
+  <rect x="604" y="508" width="30" height="2" fill="#c8c8c8"/><rect x="604" y="513" width="22" height="2" fill="#c8c8c8"/>
+  <rect x="924" y="296" width="18" height="52" rx="3" fill="#2d2d2d"/>
+  <path d="M906 343 H962 Q970 343 970 351 V482 Q970 490 962 490 H908 Q900 490 900 482 V351 Q900 343 906 343 Z" fill="url(#wht)" stroke="#cfcfcf" stroke-width="1.5"/>
+  <rect x="946" y="349" width="22" height="16" rx="3" fill="#efefef" stroke="#d0d0d0"/>
+  <rect x="911" y="387" width="36" height="36" rx="7" fill="#4b524b"/>
+  <use href="#cm" transform="translate(916.6 394) scale(22)" fill="#6cd04a"/>
+  <text x="935" y="470" font-family="sans-serif" font-size="9" font-weight="700" letter-spacing="1.3" fill="#5a5a5a" text-anchor="middle">SPARKX</text>
+  <rect x="902" y="488" width="66" height="19" rx="3" fill="#343434"/>
+  <rect x="908" y="492" width="54" height="3" fill="#4a4a4a"/>
+  <path d="M929 507 h12 l-6 9 z" fill="#8a8a8a"/>
+  <rect x="766" y="656" width="28" height="7" fill="#2a2a2a"/>
+  <polygon points="762,663 1100,663 1116,703 744,703" fill="url(#gold)"/>
+  <path d="M900 674 l70 20 M970 674 l-70 20" stroke="#c9bd95" stroke-width="2" opacity=".5"/>
+  <rect x="740" y="702" width="380" height="34" rx="3" fill="#e9e9e9" stroke="#cfcfcf" stroke-width="1.2"/>
+  <path d="M772 727 l6 -11 l6 11 z" fill="none" stroke="#6a6a6a" stroke-width="1.4"/>
+  <text x="790" y="726" font-family="sans-serif" font-size="8" font-weight="700" fill="#5a5a5a">CAUTION HOT</text>
+  <text x="1100" y="726" font-family="sans-serif" font-size="8" font-weight="600" fill="#5a5a5a" text-anchor="end">260x260x255mm³</text>
+  <rect x="762" y="736" width="336" height="11" fill="#3a3a3a"/>
+  <path d="M728 762 Q728 745 745 745 H1123 Q1140 745 1140 762 V836 Q1140 852 1124 852 H744 Q728 852 728 836 Z" fill="url(#base)" stroke="#d2d2d2" stroke-width="1.5"/>
+  <path d="M772 750 H1098 Q1104 750 1104 756 V800 H766 V756 Q766 750 772 750 Z" fill="#f6f6f6" stroke="#dadada" stroke-width="1.2"/>
+  <rect x="736" y="850" width="396" height="9" rx="4" fill="#353837"/>
+  <rect x="787" y="838" width="298" height="8" rx="4" fill="url(#rgb)"/>
+  <rect x="787" y="834" width="298" height="16" rx="8" fill="url(#rgb)" opacity=".25"/>
+  <rect x="1182" y="790" width="34" height="10" rx="2" fill="#cfcfcf"/>
+  <rect x="1140" y="719" width="115" height="73" rx="9" fill="#d6d6d6" stroke="#b5b5b5" stroke-width="1.2"/>
+  <rect x="1147" y="724" width="102" height="63" rx="5" fill="url(#glass)"/>
+  <text x="1198" y="760" font-family="sans-serif" font-size="13" font-weight="700" letter-spacing="1.6" fill="#4fc36a" text-anchor="middle">SPARKX</text>
+</svg>

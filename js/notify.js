@@ -43,57 +43,75 @@ async function sendRemote(title, body, blob, err) {
     r => ({ ok: r.ok, text: r.ok ? `${name}: enviado` : `${name}: error ${r.status}` }),
     e => ({ ok: false, text: `${name}: ${e.message}` }))));
 }
-async function notify(kind, title, body, { err = false, snap = false } = {}) {
+async function notify(kind, title, body, { err = false, snap = false, pid = null } = {}) {
   if (!cfg.notif[kind]) return;
-  toast(`${title} · ${body}`, err);
+  const pr = printers.find(x => x.id === pid), who = pr ? pr.name : HW.name;
+  toast(`${who}: ${title} · ${body}`, err);
   if (cfg.notif.sound) beep(err);
-  browserNotif(`${title} · ${HW.name}`, body, "crpanel-" + kind);
+  browserNotif(`${title} · ${who}`, body, `crpanel-${kind}-${pid}`);
   if (!cfg.ntfyTopic && !(cfg.tgToken && cfg.tgChat)) return;
-  const blob = snap && cfg.snap ? await snapBlob() : null;
-  const bad = (await sendRemote(`${title} · ${HW.name}`, body, blob, err)).filter(r => !r.ok);
+  const blob = snap && cfg.snap && P && P.id === pid ? await snapBlob() : null;
+  const bad = (await sendRemote(`${title} · ${who}`, body, blob, err)).filter(r => !r.ok);
   if (bad.length) toast("No se pudo enviar el aviso al móvil: " + bad.map(r => r.text).join(", "), true);
 }
 
-let tempArm = {}, etaDone = false;
-function detectEvents(st, state, remain, p) {
-  const ps = st.print_stats, file = ps.filename || "";
-  const active = state === "printing" || state === "paused";
-  const wasActive = prevState === "printing" || prevState === "paused";
-  if (prevState && prevState !== state) {
-    if (wasActive && state === "complete") notify("end", "Impresión terminada", `${file} · ${fmtDur(ps.print_duration)}`, { snap: true });
-    else if (wasActive && state === "cancelled") notify("error", "Impresión cancelada", file, { err: true, snap: true });
+const isActive = s => s === "printing" || s === "paused";
+function printerEvents(pr, rt) {
+  const st = rt.st, ps = st.print_stats, ev = rt.ev, file = ps.filename || "", pid = pr.id;
+  const state = st.webhooks.state !== "ready" ? "error" : ps.state;
+  const active = isActive(state), wasActive = isActive(ev.prev);
+  const p = state === "complete" ? 1 : active ? st.virtual_sdcard.progress : 0;
+  const remain = active && p >= 0.05 ? ps.print_duration * (1 - p) / p : null;
+  ev.offlineSince = 0; ev.offlineNotified = false;
+  if (ev.prev && ev.prev !== state) {
+    if (wasActive && state === "complete") notify("end", "Impresión terminada", `${file} · ${fmtDur(ps.print_duration)}`, { snap: true, pid });
+    else if (wasActive && state === "cancelled") notify("error", "Impresión cancelada", file, { err: true, snap: true, pid });
     else if (state === "error") notify("error", wasActive ? "Error durante la impresión" : "Klipper con error",
-      st.webhooks.state_message || ps.message || file, { err: true, snap: wasActive });
-    else if (prevState === "printing" && state === "paused") {
-      const head = HW.head && st[HW.head];
+      st.webhooks.state_message || ps.message || file, { err: true, snap: wasActive, pid });
+    else if (ev.prev === "printing" && state === "paused") {
+      const head = rt.head && st[rt.head];
       const runout = !!head && head.enabled !== false && !head.filament_detected;
       notify("pause", runout ? "Filamento agotado" : "Impresión en pausa", runout ? `${file} · carga filamento y reanuda` : file,
-        { err: runout, snap: runout });
+        { err: runout, snap: runout, pid });
     }
   }
-  if (!active) etaDone = false;
-  else if (!etaDone && state === "printing" && remain != null && remain <= 600 && p >= 0.5) {
-    etaDone = true;
-    if (prevState) notify("eta", "Faltan unos 10 minutos",
-      `${file} · termina aprox. a las ${new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);
+  if (!active) ev.etaDone = false;
+  else if (!ev.etaDone && state === "printing" && remain != null && remain <= 600 && p >= 0.5) {
+    ev.etaDone = true;
+    if (ev.prev) notify("eta", "Faltan unos 10 minutos",
+      `${file} · termina aprox. a las ${new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`, { pid });
   }
   for (const [h, label] of [["extruder", "Boquilla"], ["heater_bed", "Cama"]]) {
     const o = st[h]; if (!o) continue;
-    const a = tempArm[h] || (tempArm[h] = { target: 0, armed: false });
+    const a = ev.tempArm[h] || (ev.tempArm[h] = { target: 0, armed: false });
     if (o.target !== a.target) { a.target = o.target; a.armed = o.target > 0 && o.temperature < o.target - 3; }
     if (a.armed && o.temperature >= o.target - 1.5) {
       a.armed = false;
-      if (!active && !cfsBusy) notify("temp", "Temperatura alcanzada", `${label} a ${Math.round(o.target)} °C`);
+      if (!active && !(cfsBusy && P && P.id === pid)) notify("temp", "Temperatura alcanzada", `${label} a ${Math.round(o.target)} °C`, { pid });
     }
   }
+  ev.prev = state;
 }
-$("notifBtn").onclick = async () => {
+function offlineEvents(pr, rt) {
+  const ev = rt.ev;
+  if (!ev.offlineSince) ev.offlineSince = Date.now();
+  if (!ev.offlineNotified && isActive(ev.prev) && Date.now() - ev.offlineSince > 30000) {
+    ev.offlineNotified = true;
+    const file = rt.st && rt.st.print_stats.filename;
+    notify("error", "Sin conexión con la impresora", `Se perdió la conexión durante la impresión${file ? " de " + file : ""}`,
+      { err: true, pid: pr.id });
+  }
+}
+
+const paintNotifBtns = () => document.querySelectorAll(".js-notif").forEach(b =>
+  (b.style.color = "Notification" in window && Notification.permission === "granted" ? "var(--accent)" : ""));
+document.querySelectorAll(".js-notif").forEach(b => b.onclick = async () => {
   if (!window.isSecureContext)
     return toast("Los avisos del navegador solo funcionan por https://. Abre el panel con la dirección https de Tailscale.", true);
   if (!("Notification" in window)) return toast("Este navegador no admite avisos", true);
   const p = await Notification.requestPermission();
   toast(p === "granted" ? "Te avisaré cuando termine una impresión"
       : "Avisos bloqueados para esta página: actívalos en el candado de la barra de direcciones", p !== "granted");
-  $("notifBtn").style.color = p === "granted" ? "var(--accent)" : "";
-};
-if ("Notification" in window && Notification.permission === "granted") $("notifBtn").style.color = "var(--accent)";
+  paintNotifBtns();
+});
+paintNotifBtns();

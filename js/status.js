@@ -8,17 +8,19 @@ async function loadMeta(file) {
   } catch {}
 }
 
-let polling = null, offlineSince = 0, offlineNotified = false;
+let polling = null;
 const poll = () => polling || (polling = doPoll().catch(e => console.error(e)).finally(() => (polling = null)));
 async function doPoll() {
+  if (!P) return;
+  const pr = P;
   let st;
   try {
     st = (await get(`/printer/objects/query?${QUERY.map(encodeURIComponent).join("&")}`)).status;
   } catch {
-    await pollFailed();
+    if (pr === P) await pollFailed();
     return;
   }
-  offlineSince = 0; offlineNotified = false;
+  if (pr !== P) return;
   S = st;
   const ps = st.print_stats, sd = st.virtual_sdcard, gm = st.gcode_move, th = st.toolhead;
   if (ps.filename !== metaFile) await loadMeta(ps.filename);
@@ -101,9 +103,6 @@ async function doPoll() {
   else showBanner(`Klipper: ${STATE_ES[st.webhooks.state] || st.webhooks.state}${st.webhooks.state_message ? " — " + st.webhooks.state_message : ""}`, false);
 
   if (HW.box) renderCfs(st.box, st.cutter_module);
-
-  detectEvents(st, state, remain, p);
-  prevState = state;
 }
 async function pollFailed() {
   let si = null;
@@ -114,11 +113,6 @@ async function pollFailed() {
   } else {
     $("pill").className = "pill offline"; $("pill").textContent = "Sin conexión";
     $("klipBanner").hidden = true;
-  }
-  if (!offlineSince) offlineSince = Date.now();
-  if (!offlineNotified && ["printing", "paused"].includes(prevState) && Date.now() - offlineSince > 30000) {
-    offlineNotified = true;
-    notify("error", "Sin conexión con la impresora", `Se perdió la conexión durante la impresión${S ? " de " + S.print_stats.filename : ""}`, { err: true });
   }
 }
 function showBanner(text, svc) {

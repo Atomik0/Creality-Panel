@@ -1,7 +1,8 @@
 const UNITS = ["T1", "T2", "T3", "T4"];
 let slotEls = {};
 let unitsKey = "";
-const connectedUnits = box => UNITS.filter(u => box && box[u] && box[u].state === "connect");
+const connectedUnits = box => UNITS.filter(u => box && box[u] && box[u].state === "connect" &&
+  ["material_id", "color_value", "total_len", "remain_len"].every(k => Array.isArray(box[u][k])));
 const parseTnn = t => (t && /^T[1-4][A-D]$/.test(t) ? { unit: t.slice(0, 2), n: Number(t[1]), L: t[2], i: "ABCD".indexOf(t[2]) } : null);
 
 function buildSlots(units) {
@@ -11,7 +12,7 @@ function buildSlots(units) {
   for (const u of units) {
     const wrap = document.createElement("div");
     wrap.className = "cfsunit";
-    wrap.innerHTML = `${units.length > 1 ? `<h4>CFS ${u[1]}</h4>` : ""}<div class="slots"></div>`;
+    wrap.innerHTML = `${units.length > 1 ? `<h4>${esc(cfsName(P))} ${u[1]}</h4>` : ""}<div class="slots"></div>`;
     for (let i = 0; i < 4; i++) {
       const L = "ABCD"[i], id = u + L;
       const d = document.createElement("div");

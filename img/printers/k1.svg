@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="27.5 9.5 265.0 272.0">
+  <defs>
+    <linearGradient id="post" x1="0" x2="1"><stop offset="0" stop-color="#4a535a"/><stop offset="1" stop-color="#353c41"/></linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4248"/><stop offset="1" stop-color="#252a2e"/></linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3136"/><stop offset="1" stop-color="#15181a"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fd3ff" stop-opacity=".16"/><stop offset=".5" stop-color="#9fd3ff" stop-opacity=".06"/><stop offset="1" stop-color="#9fd3ff" stop-opacity=".14"/></linearGradient>
+  </defs>
+  <ellipse cx="160" cy="262" rx="122" ry="9" fill="#000" opacity=".35"/>
+  <rect x="62" y="40" width="196" height="176" fill="#101315"/>
+  <rect x="88" y="52" width="144" height="160" fill="#14171a"/>
+  <line x1="104" y1="60" x2="104" y2="212" stroke="#6b7479" stroke-width="2"/>
+  <line x1="216" y1="60" x2="216" y2="212" stroke="#6b7479" stroke-width="2"/>
+  <polygon points="96,168 224,168 238,186 82,186" fill="url(#plate)" stroke="#3d454b"/>
+  <rect x="82" y="186" width="156" height="6" fill="#2f363b"/>
+  <path d="M146 182 l6 -22 h18 l6 22 z" fill="#3d9bff"/>
+  <rect x="150" y="152" width="20" height="9" rx="2" fill="#2f86e6"/>
+  <rect x="76" y="70" width="168" height="7" rx="2" fill="#5d676e"/>
+  <rect x="138" y="58" width="44" height="40" rx="7" fill="#eef1f2"/>
+  <rect x="138" y="84" width="44" height="6" fill="#1ec85a"/>
+  <circle cx="160" cy="71" r="7" fill="#c9d0d4"/>
+  <path d="M154 98 h12 l-6 9 z" fill="#9aa3a8"/>
+  <rect x="76" y="46" width="168" height="168" fill="url(#glass)" stroke="#9fd3ff" stroke-opacity=".28"/>
+  <path d="M96 60 l40 0 l-40 70 z" fill="#fff" opacity=".05"/>
+  <rect x="232" y="112" width="5" height="34" rx="2" fill="#7c868c"/>
+  <rect x="62" y="40" width="14" height="176" fill="url(#post)"/>
+  <rect x="244" y="40" width="14" height="176" fill="url(#post)"/>
+  <rect x="56" y="26" width="208" height="18" rx="5" fill="#4f585f"/>
+  <rect x="62" y="20" width="196" height="8" rx="3" fill="#9fd3ff" opacity=".18" stroke="#9fd3ff" stroke-opacity=".3"/>
+  <rect x="56" y="214" width="208" height="42" rx="7" fill="url(#base)"/>
+  <rect x="56" y="214" width="208" height="5" rx="2" fill="#4a535a"/>
+  <rect x="198" y="226" width="50" height="20" rx="3" fill="#0b0d0e" stroke="#4c565d"/>
+  <rect x="203" y="231" width="22" height="3" rx="1" fill="#1ec85a"/>
+  <rect x="203" y="237" width="34" height="3" rx="1" fill="#3d454b"/>
+  <circle cx="76" cy="236" r="4" fill="#1ec85a" opacity=".85"/>
+</svg>

@@ -13,12 +13,12 @@ function renderChart() {
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, w, h);
   const series = [
-    { v: data.extruder.temperatures, c: getComputedStyle(document.body).getPropertyValue("--nozzle") },
-    data.heater_bed && { v: data.heater_bed.temperatures, c: getComputedStyle(document.body).getPropertyValue("--bed") },
+    { v: data.extruder.temperatures, c: cssVar("--nozzle") },
+    data.heater_bed && { v: data.heater_bed.temperatures, c: cssVar("--bed") },
   ].filter(Boolean);
   const max = Math.max(60, ...series.flatMap(s => s.v)) * 1.1;
   const L = 34, B = 18;
-  g.font = "11px Segoe UI, sans-serif"; g.fillStyle = "#6b7479"; g.strokeStyle = "#2b3034"; g.lineWidth = 1;
+  g.font = "11px Segoe UI, sans-serif"; g.fillStyle = cssVar("--muted"); g.strokeStyle = cssVar("--line"); g.lineWidth = 1;
   for (let t = 0; t <= max; t += 50) {
     const y = (h - B) - (t / max) * (h - B - 6);
     g.beginPath(); g.moveTo(L, y); g.lineTo(w, y); g.stroke();
@@ -34,7 +34,7 @@ function renderChart() {
     g.stroke(); g.setLineDash([]);
   };
   if (S) {
-    [S.extruder && S.extruder.target, S.heater_bed && S.heater_bed.target].forEach(tg => tg && line([tg, tg], "#6b7479", [4, 4]));
+    [S.extruder && S.extruder.target, S.heater_bed && S.heater_bed.target].forEach(tg => tg && line([tg, tg], cssVar("--muted"), [4, 4]));
   }
   series.forEach(s => line(s.v, s.c));
 }

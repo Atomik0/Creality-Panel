@@ -4,527 +4,618 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>K1 SE</title>
-  <link rel="stylesheet" href="css/panel.css?v=3">
+  <title>Impresoras</title>
+  <script src="js/theme.js?v=16"></script>
+  <link rel="stylesheet" href="css/panel.css?v=16">
 </head>
 
 <body>
-  <header>
-    <div class="hbar">
-      <div class="brand">
-        <div class="logo"><img alt="Creality" src="img/logo.png"></div>
-        <span class="divider"></span>
-        <div>
-          <div class="model"><span id="modelName">Impresora</span> <span class="muted" id="cfsTag"
-              style="font-weight:500" hidden>· CFS</span></div>
-          <div class="hsub" id="hostname">Creality</div>
-        </div>
-      </div>
-      <span class="pill" id="pill">Conectando</span>
-      <div class="hright">
-        <button class="estop" id="estopBtn" title="Parada de emergencia (M112): detiene todo al instante">PANIC
-          BUTTON</button>
-        <button class="icon" id="notifBtn" title="Avisos al terminar" aria-label="Avisos al terminar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-          </svg>
-        </button>
-        <button class="icon" id="settingsBtn" title="Ajustes" aria-label="Ajustes">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div class="banner" id="klipBanner" hidden>
-      <span class="msg" id="klipMsg"></span>
-      <button id="fwRestart" class="primary">Reiniciar firmware</button>
-      <button id="hostRestart">Reiniciar Klipper</button>
-      <button id="svcRestart" hidden>Reiniciar servicio Klipper</button>
-    </div>
-    <div class="top">
-      <section class="card cam" id="camCard">
-        <video id="video" autoplay muted playsinline></video>
-        <img id="mjpeg" alt="" hidden style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
-
-        <div class="msg" id="camMsg">Conectando cámara…</div>
-        <div class="tl"><span class="live" id="liveTag" hidden>EN VIVO</span></div>
-        <div class="tr">
-          <button class="icon" id="ledBtn" title="Luz" aria-label="Luz"><svg viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z" />
-            </svg></button>
-          <button class="icon" id="snapBtn" title="Captura" aria-label="Captura"><svg viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M4 8h3l2-3h6l2 3h3v11H4Z" />
-              <circle cx="12" cy="13" r="3.5" />
-            </svg></button>
-          <button class="icon" id="fsBtn" title="Pantalla completa" aria-label="Pantalla completa"><svg
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
-            </svg></button>
-          <button class="icon" id="camBtn" title="Reconectar cámara" aria-label="Reconectar cámara"><svg
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" />
-            </svg></button>
-        </div>
-        <div class="bottom" id="camInfo" hidden>
-          <div>
-            <div class="k">Progreso</div>
-            <div class="big" id="camPct">0 %</div>
-          </div>
-          <div>
-            <div class="k">Capa</div>
-            <div class="v" id="camLayer">—</div>
-          </div>
-          <div>
-            <div class="k">Restante</div>
-            <div class="v" id="camRemain">—</div>
-          </div>
-          <div>
-            <div class="k">Boquilla / cama</div>
-            <div class="v" id="camTemps">—</div>
+  <div id="hubView">
+    <header>
+      <div class="hbar">
+        <div class="brand">
+          <div class="logo"><img class="logo-l" alt="Creality" src="img/logo-light.svg"><img class="logo-d"
+              alt="Creality" src="img/logo-dark.svg"></div>
+          <span class="divider"></span>
+          <div style="line-height: 16px;">
+            <div class="model">Mis impresoras</div>
+            <div class="hsub" id="hubSub">Panel para impresoras con Klipper</div>
           </div>
         </div>
-        <div class="thinbar">
-          <div id="camBar"></div>
-        </div>
-      </section>
-
-      <section class="card job">
-        <h3 style="margin:0">Trabajo actual</h3>
-        <div class="jobhead">
-          <div class="thumbwrap">
-            <svg class="ring" viewBox="0 0 120 120">
-              <circle class="bg" cx="60" cy="60" r="55" />
-              <circle class="fg" id="ring" cx="60" cy="60" r="55" stroke-dasharray="345.6" stroke-dashoffset="345.6" />
+        <div class="hright">
+          <button class="js-scan" id="hubScanBtn" hidden>Buscar<span class="wide"> en la red</span></button>
+          <button class="primary js-add" id="hubAddBtn" hidden>Agregar<span class="wide"> impresora</span></button>
+          <button class="icon js-theme" title="Cambiar tema claro u oscuro" aria-label="Cambiar tema claro u oscuro">
+            <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
             </svg>
-            <img id="thumb" alt="">
-          </div>
-          <div>
-            <div class="pct" id="pct">0 %</div>
-            <div class="fname" id="fname">Sin trabajo</div>
-            <div class="muted" id="eta" style="margin-top:4px"></div>
-          </div>
+            <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.5" />
+              <path
+                d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+            </svg>
+          </button>
+          <button class="icon js-notif" title="Avisos" aria-label="Avisos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+          </button>
+          <button class="icon js-settings" title="Ajustes" aria-label="Ajustes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+            </svg>
+          </button>
         </div>
-        <div class="stats">
-          <div class="stat">
-            <div class="k">Transcurrido</div>
-            <div class="v" id="elapsed">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Restante aprox.</div>
-            <div class="v" id="remain">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Capa</div>
-            <div class="v" id="layer">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Velocidad</div>
-            <div class="v" id="spd">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Filamento consumido / total</div>
-            <div class="v" id="fil">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Peso actual / final</div>
-            <div class="v" id="weight">—</div>
-          </div>
-          <div class="stat" style="grid-column:1/-1">
-            <div class="k">Material</div>
-            <div class="v" id="mat" style="font-size:14px">—</div>
-          </div>
+      </div>
+    </header>
+    <main>
+      <div class="banner" id="hubError" hidden><span class="msg" id="hubErrorMsg"></span><button
+          id="hubRetry">Reintentar</button></div>
+      <section class="hero" id="hubEmpty" hidden>
+        <div class="heroart">
+          <div class="hslot" data-model="sparkx"><img src="img/printers/sparkx.svg" alt=""></div>
+          <div class="hslot" data-model="k1se"><img src="img/printers/k1se.svg" alt=""></div>
+          <div class="hslot" data-model="k2se"><img src="img/printers/k2se.svg" alt=""></div>
         </div>
-        <div class="jobbtns">
-          <button id="pause">Pausar</button>
-          <button id="resume" class="primary">Reanudar</button>
-          <button id="cancel" class="danger">Cancelar</button>
+        <h2>Todas tus impresoras en un solo lugar</h2>
+        <p class="muted">Agrega tus impresoras con Klipper para ver su estado y sus cámaras, controlarlas y recibir
+          avisos de todas desde
+          cualquier dispositivo.</p>
+        <div class="row heroacts">
+          <button class="primary js-scan">Buscar en mi red</button>
+          <button class="js-add">Agregar manualmente</button>
+        </div>
+        <div class="feats">
+          <div><b>Estado en vivo</b><span class="muted">Progreso, temperaturas y CFS de cada impresora.</span></div>
+          <div><b>Varias cámaras</b><span class="muted">La de la impresora y las que añadas, por ejemplo una
+              Tapo.</span></div>
+          <div><b>Avisos de todas</b><span class="muted">Al terminar, al fallar o si se agota el filamento.</span></div>
         </div>
       </section>
-    </div>
+      <section class="pgrid" id="hubGrid" hidden></section>
+    </main>
+  </div>
 
-    <section class="card">
-      <div class="tabs" role="tablist">
-        <button role="tab" data-tab="control" aria-selected="true">Control</button>
-        <button role="tab" data-tab="cfs" id="cfsTabBtn" hidden>CFS</button>
-        <button role="tab" data-tab="mesh">Nivelación</button>
-        <button role="tab" data-tab="files">Archivos</button>
-        <button role="tab" data-tab="timelapse">Timelapses</button>
-        <button role="tab" data-tab="stats">Estadísticas</button>
-        <button role="tab" data-tab="console">Consola</button>
-        <button role="tab" data-tab="history">Historial</button>
-      </div>
-
-      <div class="tab on" id="tab-control">
-        <div class="grid3">
-          <div class="sub">
-            <h4>Boquilla</h4>
-            <div class="heater"><span class="dotc" style="background:var(--nozzle)"></span><span class="now"
-                id="tNoz">—</span><span class="tgt" id="tNozT">—</span></div>
-            <div class="setrow">
-              <input type="number" id="setNoz" min="0" max="300" placeholder="°C" aria-label="Temperatura boquilla">
-              <button data-heat="extruder" data-src="setNoz">Fijar</button>
-              <button data-heat="extruder" data-val="220">PLA</button>
-              <button data-heat="extruder" data-val="240">PETG</button>
-              <button data-heat="extruder" data-val="260">ABS</button>
-              <button data-heat="extruder" data-val="0">Apagar</button>
-            </div>
-          </div>
-          <div class="sub">
-            <h4>Cama</h4>
-            <div class="heater"><span class="dotc" style="background:var(--bed)"></span><span class="now"
-                id="tBed">—</span><span class="tgt" id="tBedT">—</span></div>
-            <div class="setrow">
-              <input type="number" id="setBed" min="0" max="110" placeholder="°C" aria-label="Temperatura cama">
-              <button data-heat="heater_bed" data-src="setBed">Fijar</button>
-              <button data-heat="heater_bed" data-val="60">PLA</button>
-              <button data-heat="heater_bed" data-val="80">PETG</button>
-              <button data-heat="heater_bed" data-val="100">ABS</button>
-              <button data-heat="heater_bed" data-val="0">Apagar</button>
-            </div>
-          </div>
-          <div class="sub">
-            <h4>Sistema</h4>
-            <div class="stats">
-              <div class="stat" id="tMbBox">
-                <div class="k" id="tMbLabel">Placa base</div>
-                <div class="v" id="tMb">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Ventilador pieza</div>
-                <div class="v" id="fanNow">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Posición</div>
-                <div class="v" id="pos" style="font-size:13px">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Ejes con home</div>
-                <div class="v" id="homed">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Carga del sistema</div>
-                <div class="v" id="sysload">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">RAM libre</div>
-                <div class="v" id="mem">—</div>
-              </div>
-            </div>
+  <div id="panelView" hidden>
+    <header>
+      <div class="hbar">
+        <div class="brand">
+          <a class="icon backbtn" href="#/" title="Volver a mis impresoras" aria-label="Volver a mis impresoras">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </a>
+          <div class="logo"><img class="logo-l" alt="Creality" src="img/logo-light.svg"><img class="logo-d"
+              alt="Creality" src="img/logo-dark.svg"></div>
+          <span class="divider"></span>
+          <div style="line-height: 16px;">
+            <div class="model"><span id="modelName">Impresora</span> <span class="muted" id="cfsTag"
+                style="font-weight:500" hidden>· CFS</span></div>
+            <div class="hsub" id="hostname">Creality</div>
           </div>
         </div>
-
-        <div class="grid2" style="margin-top:18px">
-          <div class="sub">
-            <h4>Temperaturas (últimos 10 min)</h4>
-            <div class="chartbox"><canvas id="chart"></canvas></div>
-            <div class="legend"><span><i style="background:var(--nozzle)"></i>Boquilla</span><span><i
-                  style="background:var(--bed)"></i>Cama</span><span><i style="background:#6b7479"></i>Objetivo</span>
-            </div>
-          </div>
-          <div class="sub">
-            <h4>Ajustes en vivo</h4>
-            <div class="slider"><label for="spdR">Velocidad</label><input type="range" id="spdR" min="50" max="200"
-                step="5"><output id="spdO">—</output></div>
-            <div class="slider"><label for="flowR">Flujo</label><input type="range" id="flowR" min="80" max="120"
-                step="1"><output id="flowO">—</output></div>
-            <div class="slider"><label for="fanR">Ventilador</label><input type="range" id="fanR" min="0" max="100"
-                step="5"><output id="fanO">—</output></div>
-            <h4 style="margin-top:18px">Offset Z (ajuste fino)</h4>
-            <div class="zoff">
-              <button data-z="-0.05">−0.05</button><button data-z="-0.01">−0.01</button>
-              <span class="val" id="zval">—</span>
-              <button data-z="0.01">+0.01</button><button data-z="0.05">+0.05</button>
-            </div>
-            <div class="muted" style="font-size:12px;margin-top:8px">Negativo acerca la boquilla a la cama. Se aplica al
-              instante.</div>
-          </div>
-        </div>
-
-        <div class="sub" style="margin-top:18px">
-          <div class="row spread">
-            <h4 style="margin:0">Movimiento</h4>
-            <div class="row"><span class="muted" style="font-size:12px">Paso (mm)</span>
-              <div class="steps" id="steps"><button data-s="0.1">0.1</button><button data-s="1">1</button><button
-                  data-s="10" class="on">10</button><button data-s="50">50</button></div>
-            </div>
-          </div>
-          <div class="row" style="margin-top:14px;gap:28px;align-items:start">
-            <div class="jog" id="jog">
-              <span></span><button data-ax="Y" data-dir="1">Y+</button><span></span><span></span><button data-ax="Z"
-                data-dir="-1" title="Subir la cama / acercar">Z−</button>
-              <button data-ax="X" data-dir="-1">X−</button><button id="homeXY" title="Home X Y">⌂</button><button
-                data-ax="X" data-dir="1">X+</button><span></span><span></span>
-              <span></span><button data-ax="Y" data-dir="-1">Y−</button><span></span><span></span><button data-ax="Z"
-                data-dir="1">Z+</button>
-            </div>
-            <div style="display:grid;gap:8px">
-              <button id="homeAll" class="primary">Home todos los ejes</button>
-              <button id="motorsOff">Liberar motores</button>
-              <div class="muted" id="jogNote" style="font-size:12px;max-width:260px"></div>
-            </div>
-            <div class="extr">
-              <div class="row"><span class="muted" style="font-size:12px">Extrusor (mm)</span>
-                <div class="steps" id="eSteps"><button data-e="5">5</button><button data-e="10"
-                    class="on">10</button><button data-e="50">50</button></div>
-              </div>
-              <div class="row"><button id="retract">↑ Retraer</button><button id="extrude" class="primary">↓
-                  Extruir</button></div>
-              <div class="muted" id="extrNote" style="font-size:12px;max-width:260px"></div>
-            </div>
-          </div>
+        <span class="pill" id="pill">Conectando</span>
+        <div class="hright">
+          <button class="estop" id="estopBtn" title="Parada de emergencia (M112): detiene todo al instante">PANIC
+            BUTTON</button>
+          <button class="icon" id="editPrinterBtn" title="Editar impresora" aria-label="Editar impresora">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+              <path d="M4 20h4L19 9l-4-4L4 16v4Z" />
+              <path d="M13.5 6.5l4 4" />
+            </svg>
+          </button>
+          <button class="icon js-theme" title="Cambiar tema claro u oscuro" aria-label="Cambiar tema claro u oscuro">
+            <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+            </svg>
+            <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.5" />
+              <path
+                d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+            </svg>
+          </button>
+          <button class="icon js-notif" title="Avisos" aria-label="Avisos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+          </button>
+          <button class="icon js-settings" title="Ajustes" aria-label="Ajustes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+            </svg>
+          </button>
         </div>
       </div>
+    </header>
 
-      <div class="tab" id="tab-cfs">
-        <div class="slots" id="slots"></div>
-        <div class="cfsbar">
-          <div class="sub">
-            <h4>Recorrido del filamento</h4>
-            <div class="path">
-              <div class="node"><span class="led" id="pBox"></span><b>CFS</b><span class="muted" id="pSlot">—</span>
-              </div>
-              <span class="arrow">→</span>
-              <div class="node"><span class="led" id="pBuf"></span><b>Cortador</b><span class="muted"
-                  id="pBufTxt">—</span></div>
-              <span class="arrow">→</span>
-              <div class="node"><span class="led" id="pCut"></span><b>Cabezal</b><span class="muted"
-                  id="pCutTxt">—</span></div>
+    <main>
+      <div class="banner" id="klipBanner" hidden>
+        <span class="msg" id="klipMsg"></span>
+        <button id="fwRestart" class="primary">Reiniciar firmware</button>
+        <button id="hostRestart">Reiniciar Klipper</button>
+        <button id="svcRestart" hidden>Reiniciar servicio Klipper</button>
+      </div>
+      <div class="top">
+        <section class="card cam" id="camCard">
+          <video id="video" autoplay muted playsinline></video>
+          <img id="mjpeg" alt="" hidden style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+
+          <div class="msg" id="camMsg">Conectando cámara…</div>
+          <div class="tl"><span class="live" id="liveTag" hidden>EN VIVO</span>
+            <div class="camsel" id="camSel" hidden></div>
+          </div>
+          <div class="tr">
+            <button class="icon" id="ledBtn" title="Luz" aria-label="Luz"><svg viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z" />
+              </svg></button>
+            <button class="icon" id="snapBtn" title="Captura" aria-label="Captura"><svg viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M4 8h3l2-3h6l2 3h3v11H4Z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg></button>
+            <button class="icon" id="fsBtn" title="Pantalla completa" aria-label="Pantalla completa"><svg
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+              </svg></button>
+            <button class="icon" id="camBtn" title="Reconectar cámara" aria-label="Reconectar cámara"><svg
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" />
+              </svg></button>
+          </div>
+          <div class="bottom" id="camInfo" hidden>
+            <div>
+              <div class="k">Progreso</div>
+              <div class="big" id="camPct">0 %</div>
             </div>
-            <div class="row" style="margin-top:16px">
-              <button id="unloadBtn">Descargar filamento del cabezal</button>
-              <span class="muted" id="cfsLock" style="font-size:12px"></span>
+            <div>
+              <div class="k">Capa</div>
+              <div class="v" id="camLayer">—</div>
+            </div>
+            <div>
+              <div class="k">Restante</div>
+              <div class="v" id="camRemain">—</div>
+            </div>
+            <div>
+              <div class="k">Boquilla / cama</div>
+              <div class="v" id="camTemps">—</div>
             </div>
           </div>
-          <div class="sub">
-            <h4>Opciones del CFS</h4>
-            <div class="toggle">
-              <div>
-                <div>Recarga automática</div>
-                <div class="muted" style="font-size:12px">Si se acaba un carrete, sigue con otro igual</div>
-              </div>
-              <div class="seg" data-cmd="BOX_ENABLE_AUTO_REFILL ENABLE=" data-key="k1se_refill"><button
-                  data-v="1">Sí</button><button data-v="0">No</button></div>
+          <div class="thinbar">
+            <div id="camBar"></div>
+          </div>
+        </section>
+
+        <section class="card job">
+          <h3 style="margin:0">Trabajo actual</h3>
+          <div class="jobhead">
+            <div class="thumbwrap">
+              <svg class="ring" viewBox="0 0 120 120">
+                <circle class="bg" cx="60" cy="60" r="55" />
+                <circle class="fg" id="ring" cx="60" cy="60" r="55" stroke-dasharray="345.6"
+                  stroke-dashoffset="345.6" />
+              </svg>
+              <img id="thumb" alt="">
             </div>
-            <div class="toggle">
-              <div>
-                <div>Cambio automático de ranura</div>
-                <div class="muted" style="font-size:12px">Usa otra ranura con el mismo material</div>
-              </div>
-              <div class="seg" data-cmd="BOX_SET_TN_AUTOMATIC_SWITCH ENABLE=" data-key="k1se_autosw"><button
-                  data-v="1">Sí</button><button data-v="0">No</button></div>
-            </div>
-            <div class="toggle">
-              <div>
-                <div>Precarga al insertar</div>
-                <div class="muted" style="font-size:12px">Engancha el filamento al meter un carrete</div>
-              </div>
-              <div class="seg" data-cmd="BOX_SET_PRE_LOADING ACTION=" data-key="k1se_preload"><button
-                  data-v="OPEN">Sí</button><button data-v="CLOSE">No</button></div>
+            <div>
+              <div class="pct" id="pct">0 %</div>
+              <div class="fname" id="fname">Sin trabajo</div>
+              <div class="muted" id="eta" style="margin-top:4px"></div>
             </div>
           </div>
-        </div>
-        <div class="kv">
-          <div class="stat">
-            <div class="k">Temperatura CFS</div>
-            <div class="v" id="cfsT">—</div>
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Transcurrido</div>
+              <div class="v" id="elapsed">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Restante aprox.</div>
+              <div class="v" id="remain">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Capa</div>
+              <div class="v" id="layer">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Velocidad</div>
+              <div class="v" id="spd">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Filamento consumido / total</div>
+              <div class="v" id="fil">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Peso actual / final</div>
+              <div class="v" id="weight">—</div>
+            </div>
+            <div class="stat" style="grid-column:1/-1">
+              <div class="k">Material</div>
+              <div class="v" id="mat" style="font-size:14px">—</div>
+            </div>
           </div>
-          <div class="stat">
-            <div class="k">Humedad</div>
-            <div class="v" id="cfsH">—</div>
+          <div class="jobbtns">
+            <button id="pause">Pausar</button>
+            <button id="resume" class="primary">Reanudar</button>
+            <button id="cancel" class="danger">Cancelar</button>
           </div>
-          <div class="stat">
-            <div class="k">Cortes realizados</div>
-            <div class="v" id="cfsCuts">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Firmware CFS</div>
-            <div class="v" id="cfsFw" style="font-size:13px">—</div>
-          </div>
-        </div>
+        </section>
       </div>
 
-      <div class="tab" id="tab-mesh">
-        <div class="meshwrap">
-          <div class="mesh" id="mesh">
+      <section class="card">
+        <div class="tabs" role="tablist">
+          <button role="tab" data-tab="control" aria-selected="true">Control</button>
+          <button role="tab" data-tab="cfs" id="cfsTabBtn" hidden>CFS</button>
+          <button role="tab" data-tab="mesh">Nivelación</button>
+          <button role="tab" data-tab="files">Archivos</button>
+          <button role="tab" data-tab="timelapse" id="tlTabBtn">Timelapses</button>
+          <button role="tab" data-tab="stats">Estadísticas</button>
+          <button role="tab" data-tab="console">Consola</button>
+          <button role="tab" data-tab="history">Historial</button>
+        </div>
+
+        <div class="tab on" id="tab-control">
+          <div class="grid3">
+            <div class="sub">
+              <h4>Boquilla</h4>
+              <div class="heater"><span class="dotc" style="background:var(--nozzle)"></span><span class="now"
+                  id="tNoz">—</span><span class="tgt" id="tNozT">—</span></div>
+              <div class="setrow">
+                <input type="number" id="setNoz" min="0" max="300" placeholder="°C" aria-label="Temperatura boquilla">
+                <button data-heat="extruder" data-src="setNoz">Fijar</button>
+                <button data-heat="extruder" data-val="220">PLA</button>
+                <button data-heat="extruder" data-val="240">PETG</button>
+                <button data-heat="extruder" data-val="260">ABS</button>
+                <button data-heat="extruder" data-val="0">Apagar</button>
+              </div>
+            </div>
+            <div class="sub">
+              <h4>Cama</h4>
+              <div class="heater"><span class="dotc" style="background:var(--bed)"></span><span class="now"
+                  id="tBed">—</span><span class="tgt" id="tBedT">—</span></div>
+              <div class="setrow">
+                <input type="number" id="setBed" min="0" max="110" placeholder="°C" aria-label="Temperatura cama">
+                <button data-heat="heater_bed" data-src="setBed">Fijar</button>
+                <button data-heat="heater_bed" data-val="60">PLA</button>
+                <button data-heat="heater_bed" data-val="80">PETG</button>
+                <button data-heat="heater_bed" data-val="100">ABS</button>
+                <button data-heat="heater_bed" data-val="0">Apagar</button>
+              </div>
+            </div>
+            <div class="sub">
+              <h4>Sistema</h4>
+              <div class="stats">
+                <div class="stat" id="tMbBox">
+                  <div class="k" id="tMbLabel">Placa base</div>
+                  <div class="v" id="tMb">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Ventilador pieza</div>
+                  <div class="v" id="fanNow">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Posición</div>
+                  <div class="v" id="pos" style="font-size:13px">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Ejes con home</div>
+                  <div class="v" id="homed">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Carga del sistema</div>
+                  <div class="v" id="sysload">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">RAM libre</div>
+                  <div class="v" id="mem">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2" style="margin-top:18px">
+            <div class="sub">
+              <h4>Temperaturas (últimos 10 min)</h4>
+              <div class="chartbox"><canvas id="chart"></canvas></div>
+              <div class="legend"><span><i style="background:var(--nozzle)"></i>Boquilla</span><span><i
+                    style="background:var(--bed)"></i>Cama</span><span><i
+                    style="background:var(--muted)"></i>Objetivo</span>
+              </div>
+            </div>
+            <div class="sub">
+              <h4>Ajustes en vivo</h4>
+              <div class="slider"><label for="spdR">Velocidad</label><input type="range" id="spdR" min="50" max="200"
+                  step="5"><output id="spdO">—</output></div>
+              <div class="slider"><label for="flowR">Flujo</label><input type="range" id="flowR" min="80" max="120"
+                  step="1"><output id="flowO">—</output></div>
+              <div class="slider"><label for="fanR">Ventilador</label><input type="range" id="fanR" min="0" max="100"
+                  step="5"><output id="fanO">—</output></div>
+              <h4 style="margin-top:18px">Offset Z (ajuste fino)</h4>
+              <div class="zoff">
+                <button data-z="-0.05">−0.05</button><button data-z="-0.01">−0.01</button>
+                <span class="val" id="zval">—</span>
+                <button data-z="0.01">+0.01</button><button data-z="0.05">+0.05</button>
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:8px">Negativo acerca la boquilla a la cama. Se aplica
+                al
+                instante.</div>
+            </div>
+          </div>
+
+          <div class="sub" style="margin-top:18px">
+            <div class="row spread">
+              <h4 style="margin:0">Movimiento</h4>
+              <div class="row"><span class="muted" style="font-size:12px">Paso (mm)</span>
+                <div class="steps" id="steps"><button data-s="0.1">0.1</button><button data-s="1">1</button><button
+                    data-s="10" class="on">10</button><button data-s="50">50</button></div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:14px;gap:28px;align-items:start">
+              <div class="jog" id="jog">
+                <span></span><button data-ax="Y" data-dir="1">Y+</button><span></span><span></span><button data-ax="Z"
+                  data-dir="-1" title="Subir la cama / acercar">Z−</button>
+                <button data-ax="X" data-dir="-1">X−</button><button id="homeXY" title="Home X Y">⌂</button><button
+                  data-ax="X" data-dir="1">X+</button><span></span><span></span>
+                <span></span><button data-ax="Y" data-dir="-1">Y−</button><span></span><span></span><button data-ax="Z"
+                  data-dir="1">Z+</button>
+              </div>
+              <div style="display:grid;gap:8px">
+                <button id="homeAll" class="primary">Home todos los ejes</button>
+                <button id="motorsOff">Liberar motores</button>
+                <div class="muted" id="jogNote" style="font-size:12px;max-width:260px"></div>
+              </div>
+              <div class="extr">
+                <div class="row"><span class="muted" style="font-size:12px">Extrusor (mm)</span>
+                  <div class="steps" id="eSteps"><button data-e="5">5</button><button data-e="10"
+                      class="on">10</button><button data-e="50">50</button></div>
+                </div>
+                <div class="row"><button id="retract">↑ Retraer</button><button id="extrude" class="primary">↓
+                    Extruir</button></div>
+                <div class="muted" id="extrNote" style="font-size:12px;max-width:260px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab" id="tab-cfs">
+          <div class="slots" id="slots"></div>
+          <div class="cfsbar">
+            <div class="sub">
+              <h4>Recorrido del filamento</h4>
+              <div class="path">
+                <div class="node"><span class="led" id="pBox"></span><b>CFS</b><span class="muted" id="pSlot">—</span>
+                </div>
+                <span class="arrow">→</span>
+                <div class="node"><span class="led" id="pBuf"></span><b>Cortador</b><span class="muted"
+                    id="pBufTxt">—</span></div>
+                <span class="arrow">→</span>
+                <div class="node"><span class="led" id="pCut"></span><b>Cabezal</b><span class="muted"
+                    id="pCutTxt">—</span></div>
+              </div>
+              <div class="row" style="margin-top:16px">
+                <button id="unloadBtn">Descargar filamento del cabezal</button>
+                <span class="muted" id="cfsLock" style="font-size:12px"></span>
+              </div>
+            </div>
+            <div class="sub">
+              <h4>Opciones del CFS</h4>
+              <div class="toggle">
+                <div>
+                  <div>Recarga automática</div>
+                  <div class="muted" style="font-size:12px">Si se acaba un carrete, sigue con otro igual</div>
+                </div>
+                <div class="seg" data-cmd="BOX_ENABLE_AUTO_REFILL ENABLE=" data-key="k1se_refill"><button
+                    data-v="1">Sí</button><button data-v="0">No</button></div>
+              </div>
+              <div class="toggle">
+                <div>
+                  <div>Cambio automático de ranura</div>
+                  <div class="muted" style="font-size:12px">Usa otra ranura con el mismo material</div>
+                </div>
+                <div class="seg" data-cmd="BOX_SET_TN_AUTOMATIC_SWITCH ENABLE=" data-key="k1se_autosw"><button
+                    data-v="1">Sí</button><button data-v="0">No</button></div>
+              </div>
+              <div class="toggle">
+                <div>
+                  <div>Precarga al insertar</div>
+                  <div class="muted" style="font-size:12px">Engancha el filamento al meter un carrete</div>
+                </div>
+                <div class="seg" data-cmd="BOX_SET_PRE_LOADING ACTION=" data-key="k1se_preload"><button
+                    data-v="OPEN">Sí</button><button data-v="CLOSE">No</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="kv">
+            <div class="stat">
+              <div class="k">Temperatura CFS</div>
+              <div class="v" id="cfsT">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Humedad</div>
+              <div class="v" id="cfsH">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Cortes realizados</div>
+              <div class="v" id="cfsCuts">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Firmware CFS</div>
+              <div class="v" id="cfsFw" style="font-size:13px">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab" id="tab-mesh">
+          <div class="meshwrap">
+            <div class="mesh" id="mesh">
+              <div class="muted">Cargando…</div>
+            </div>
+            <div class="sub">
+              <h4>Malla de nivelación</h4>
+              <div class="stats" style="grid-template-columns:1fr">
+                <div class="stat">
+                  <div class="k">Perfil</div>
+                  <div class="v" id="mProf">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Punto más bajo / más alto</div>
+                  <div class="v" id="mMinMax">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Diferencia total</div>
+                  <div class="v" id="mRange">—</div>
+                </div>
+              </div>
+              <div class="scale"></div>
+              <div class="row spread muted" style="font-size:12px"><span id="mLo">—</span><span id="mHi">—</span></div>
+              <p class="muted" style="font-size:12px;margin:12px 0 0">Vista desde arriba con el frente de la cama abajo.
+                Por debajo de 0,3 mm de diferencia total la cama está bien nivelada.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab" id="tab-files">
+          <div class="drop" id="drop" role="button" tabindex="0">
+            <input type="file" id="fileIn" accept=".gcode" hidden>
+            <strong>Arrastra un .gcode aquí</strong> o haz clic para elegirlo
+            <div class="row" style="justify-content:center;margin-top:8px"><label class="row" id="printAfterLbl"
+                style="gap:6px"><input type="checkbox" id="printAfter"> Imprimir al terminar de subir</label></div>
+            <div class="uploadbar" id="upBar">
+              <div></div>
+            </div>
+          </div>
+          <div class="row spread" style="margin-bottom:10px">
+            <input type="text" id="search" placeholder="Buscar archivo…" class="grow" style="max-width:320px">
+            <button id="refreshFiles">Actualizar</button>
+          </div>
+          <div class="files" id="files">
             <div class="muted">Cargando…</div>
           </div>
-          <div class="sub">
-            <h4>Malla de nivelación</h4>
-            <div class="stats" style="grid-template-columns:1fr">
-              <div class="stat">
-                <div class="k">Perfil</div>
-                <div class="v" id="mProf">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Punto más bajo / más alto</div>
-                <div class="v" id="mMinMax">—</div>
-              </div>
-              <div class="stat">
-                <div class="k">Diferencia total</div>
-                <div class="v" id="mRange">—</div>
-              </div>
+        </div>
+
+        <div class="tab" id="tab-timelapse">
+          <div class="row spread" style="margin-bottom:12px">
+            <span class="muted" id="tlCount"></span>
+            <button id="tlRefresh">Actualizar</button>
+          </div>
+          <div class="tls" id="tls">
+            <div class="muted">Cargando…</div>
+          </div>
+        </div>
+
+        <div class="tab" id="tab-stats">
+          <div class="kpis">
+            <div class="stat">
+              <div class="k">Horas de impresión</div>
+              <div class="v" id="stHours">—</div>
             </div>
-            <div class="scale"></div>
-            <div class="row spread muted" style="font-size:12px"><span id="mLo">—</span><span id="mHi">—</span></div>
-            <p class="muted" style="font-size:12px;margin:12px 0 0">Vista desde arriba con el frente de la cama abajo.
-              Por debajo de 0,3 mm de diferencia total la cama está bien nivelada.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab" id="tab-files">
-        <div class="drop" id="drop" role="button" tabindex="0">
-          <input type="file" id="fileIn" accept=".gcode" hidden>
-          <strong>Arrastra un .gcode aquí</strong> o haz clic para elegirlo
-          <div class="row" style="justify-content:center;margin-top:8px"><label class="row" id="printAfterLbl"
-              style="gap:6px"><input type="checkbox" id="printAfter"> Imprimir al terminar de subir</label></div>
-          <div class="uploadbar" id="upBar">
-            <div></div>
-          </div>
-        </div>
-        <div class="row spread" style="margin-bottom:10px">
-          <input type="text" id="search" placeholder="Buscar archivo…" class="grow" style="max-width:320px">
-          <button id="refreshFiles">Actualizar</button>
-        </div>
-        <div class="files" id="files">
-          <div class="muted">Cargando…</div>
-        </div>
-      </div>
-
-      <div class="tab" id="tab-timelapse">
-        <div class="row spread" style="margin-bottom:12px">
-          <span class="muted" id="tlCount"></span>
-          <button id="tlRefresh">Actualizar</button>
-        </div>
-        <div class="tls" id="tls">
-          <div class="muted">Cargando…</div>
-        </div>
-      </div>
-
-      <div class="tab" id="tab-stats">
-        <div class="kpis">
-          <div class="stat">
-            <div class="k">Horas de impresión</div>
-            <div class="v" id="stHours">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Trabajos</div>
-            <div class="v" id="stJobs">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Tasa de éxito</div>
-            <div class="v" id="stOk">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Filamento usado</div>
-            <div class="v" id="stFil">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Coste estimado</div>
-            <div class="v" id="stCost">—</div>
-          </div>
-          <div class="stat">
-            <div class="k">Impresión más larga</div>
-            <div class="v" id="stLong">—</div>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top:18px">
-          <div class="sub">
-            <h4>Horas por día (últimos 30 días)</h4>
-            <div class="chartbox" style="height:190px"><canvas id="dayChart"></canvas></div>
-          </div>
-          <div class="sub">
-            <h4>Filamento por material</h4>
-            <div id="byMat" class="bars"></div>
-            <h4 style="margin-top:16px">Colores más usados</h4>
-            <div id="byColor" class="chips"></div>
-            <div class="row" style="margin-top:16px">
-              <label for="pricePerKg" class="muted" style="font-size:13px">Precio por kg</label>
-              <input type="number" id="pricePerKg" min="0" step="0.01" style="width:110px">
-              <input type="text" id="currency" maxlength="4" style="width:60px" aria-label="Moneda">
-              <button id="savePrice">Guardar</button>
+            <div class="stat">
+              <div class="k">Trabajos</div>
+              <div class="v" id="stJobs">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Tasa de éxito</div>
+              <div class="v" id="stOk">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Filamento usado</div>
+              <div class="v" id="stFil">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Coste estimado</div>
+              <div class="v" id="stCost">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Impresión más larga</div>
+              <div class="v" id="stLong">—</div>
             </div>
           </div>
-        </div>
-        <div class="sub" style="margin-top:18px">
-          <div class="row spread">
-            <h4 style="margin:0">Mantenimiento</h4><span class="muted" style="font-size:12px" id="mtStore"></span>
+          <div class="grid2" style="margin-top:18px">
+            <div class="sub">
+              <h4>Horas por día (últimos 30 días)</h4>
+              <div class="chartbox" style="height:190px"><canvas id="dayChart"></canvas></div>
+            </div>
+            <div class="sub">
+              <h4>Filamento por material</h4>
+              <div id="byMat" class="bars"></div>
+              <h4 style="margin-top:16px">Colores más usados</h4>
+              <div id="byColor" class="chips"></div>
+              <div class="row" style="margin-top:16px">
+                <label for="pricePerKg" class="muted" style="font-size:13px">Precio por kg</label>
+                <input type="number" id="pricePerKg" min="0" step="0.01" style="width:110px">
+                <input type="text" id="currency" maxlength="4" style="width:60px" aria-label="Moneda">
+                <button id="savePrice">Guardar</button>
+              </div>
+            </div>
           </div>
-          <div class="mtlist" id="mtList"></div>
-          <form class="row" id="mtForm" style="margin-top:12px">
-            <input type="text" id="mtName" placeholder="Nueva tarea, p. ej. Cambiar boquilla" class="grow"
-              style="min-width:180px">
-            <input type="number" id="mtEvery" placeholder="Cada" min="1" style="width:90px">
-            <select id="mtUnit" style="width:auto">
-              <option value="h">horas</option>
-              <option value="cuts">cortes CFS</option>
-              <option value="days">días</option>
-            </select>
-            <button class="primary" type="submit">Añadir</button>
+          <div class="sub" style="margin-top:18px">
+            <div class="row spread">
+              <h4 style="margin:0">Mantenimiento</h4><span class="muted" style="font-size:12px" id="mtStore"></span>
+            </div>
+            <div class="mtlist" id="mtList"></div>
+            <form class="row" id="mtForm" style="margin-top:12px">
+              <input type="text" id="mtName" placeholder="Nueva tarea, p. ej. Cambiar boquilla" class="grow"
+                style="min-width:180px">
+              <input type="number" id="mtEvery" placeholder="Cada" min="1" style="width:90px">
+              <select id="mtUnit" style="width:auto">
+                <option value="h">horas</option>
+                <option value="cuts">cortes CFS</option>
+                <option value="days">días</option>
+              </select>
+              <button class="primary" type="submit">Añadir</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="tab" id="tab-console">
+          <div class="console" id="console"></div>
+          <form class="row" id="gcForm" style="margin-top:10px">
+            <input type="text" id="gcIn" class="grow" placeholder="Escribe un comando G-code, p. ej. M115"
+              spellcheck="false" autocomplete="off">
+            <button class="primary" type="submit">Enviar</button>
           </form>
         </div>
-      </div>
 
-      <div class="tab" id="tab-console">
-        <div class="console" id="console"></div>
-        <form class="row" id="gcForm" style="margin-top:10px">
-          <input type="text" id="gcIn" class="grow" placeholder="Escribe un comando G-code, p. ej. M115"
-            spellcheck="false" autocomplete="off">
-          <button class="primary" type="submit">Enviar</button>
-        </form>
-      </div>
-
-      <div class="tab" id="tab-history">
-        <div class="tblwrap">
-          <table class="hist">
-            <thead>
-              <tr>
-                <th>Archivo</th>
-                <th>Estado</th>
-                <th>Inicio</th>
-                <th>Duración</th>
-                <th>Filamento</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="hist"></tbody>
-          </table>
+        <div class="tab" id="tab-history">
+          <div class="tblwrap">
+            <table class="hist">
+              <thead>
+                <tr>
+                  <th>Archivo</th>
+                  <th>Estado</th>
+                  <th>Inicio</th>
+                  <th>Duración</th>
+                  <th>Filamento</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="hist"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
   <footer>Panel no oficial para impresoras Creality con Klipper · se conecta a la impresora por tu red local</footer>
 
   <div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <div class="box settings">
       <h3 id="setTitle" style="margin:0 0 4px;font-size:17px">Ajustes</h3>
-      <p class="muted" style="font-size:12px;margin:0 0 16px">Se guardan en este navegador.</p>
-      <div class="note" id="setServerNote" hidden>Este panel lo sirve tu servidor: la IP y los puertos de la impresora
-        se configuran en el servidor.</div>
+      <p class="muted" style="font-size:12px;margin:0 0 16px">Se guardan en este navegador. Las impresoras y sus cámaras
+        se
+        configuran desde cada impresora.</p>
       <div class="form">
-        <div class="field"><label for="cfgIp">IP de la impresora</label><input type="text" id="cfgIp" spellcheck="false"
-            placeholder="192.168.1.x"></div>
-        <div class="field"><label for="cfgName">Nombre a mostrar</label><input type="text" id="cfgName"
-            placeholder="Automático"></div>
-        <div class="field"><label for="cfgCam">Cámara</label>
-          <select id="cfgCam">
-            <option value="webrtc">Creality (WebRTC)</option>
-            <option value="mjpeg">MJPEG (URL)</option>
-            <option value="off">Sin cámara</option>
-          </select>
-        </div>
-        <div class="field" id="cfgMjpegBox"><label for="cfgMjpeg">URL MJPEG</label><input type="text" id="cfgMjpeg"
-            spellcheck="false" placeholder="http://IP:8080/?action=stream"></div>
-        <div class="field"><label for="cfgPoll">Actualizar cada</label>
+        <div class="field"><label for="cfgPoll">Actualizar la impresora abierta cada</label>
           <select id="cfgPoll">
             <option value="1000">1 s</option>
             <option value="1500">1,5 s</option>
@@ -533,20 +624,7 @@
           </select>
         </div>
       </div>
-      <details style="margin:4px 0 14px">
-        <summary class="muted" style="cursor:pointer;font-size:13px">Puertos avanzados</summary>
-        <div class="form" style="margin-top:12px">
-          <div class="field"><label for="cfgApiPort">API Klipper</label><input type="number" id="cfgApiPort"
-              placeholder="7125"></div>
-          <div class="field"><label for="cfgCamPort">Cámara WebRTC</label><input type="number" id="cfgCamPort"
-              placeholder="8000"></div>
-          <div class="field"><label for="cfgWsPort">WebSocket Creality</label><input type="number" id="cfgWsPort"
-              placeholder="9999"></div>
-          <div class="field"><label for="cfgWebPort">Web (timelapses)</label><input type="number" id="cfgWebPort"
-              placeholder="80"></div>
-        </div>
-      </details>
-      <details style="margin:0 0 14px">
+      <details open style="margin:0 0 14px">
         <summary class="muted" style="cursor:pointer;font-size:13px">Avisos</summary>
         <div style="margin-top:12px">
           <div class="checks">
@@ -557,7 +635,8 @@
             <label><input type="checkbox" id="nfTemp"> Temperatura alcanzada</label>
             <label><input type="checkbox" id="nfSound"> Sonido</label>
           </div>
-          <div class="note">Los avisos los genera este panel, así que tiene que estar abierto en algún dispositivo.
+          <div class="note">Los avisos de todas las impresoras los genera este panel, así que tiene que estar abierto en
+            algún dispositivo.
             Configura ntfy o Telegram en <b>un solo</b> navegador para no recibirlos duplicados.</div>
           <div class="form">
             <div class="field"><label for="cfgNtfyServer">Servidor ntfy</label><input type="text" id="cfgNtfyServer"
@@ -576,8 +655,7 @@
       </details>
       <div class="testres" id="testRes"></div>
       <div class="row spread" style="margin-top:16px">
-        <div class="row"><button id="cfgTest">Probar conexión</button><button id="cfgReset"
-            class="danger">Restablecer</button></div>
+        <div class="row"><button id="cfgReset" class="danger">Restablecer</button></div>
         <div class="row"><button id="cfgNo">Cancelar</button><button class="primary" id="cfgSave">Guardar</button></div>
       </div>
     </div>
@@ -609,18 +687,76 @@
       <div class="sub2" id="lbSub"></div>
     </div>
   </div>
+  <div class="modal" id="printerModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <div class="box settings">
+      <h3 id="pmTitle" style="margin:0 0 16px;font-size:17px">Agregar impresora</h3>
+      <div class="pmtop">
+        <div class="pmphoto">
+          <img id="pmImg" alt="">
+          <div class="row" id="pmPhotoActs">
+            <input type="file" id="pmPhotoIn" accept="image/*" hidden>
+            <button type="button" id="pmPhotoBtn">Subir foto</button>
+            <button type="button" id="pmPhotoDel" class="danger">Quitar</button>
+          </div>
+        </div>
+        <div>
+          <div class="field"><label for="pmName">Nombre</label><input type="text" id="pmName"
+              placeholder="Por ejemplo, K1 SE del taller"></div>
+          <div class="field"><label for="pmModel">Modelo</label><select id="pmModel"></select></div>
+          <div class="field"><label for="pmHost">IP de la impresora</label><input type="text" id="pmHost"
+              spellcheck="false" placeholder="192.168.1.x"></div>
+        </div>
+      </div>
+      <h4 class="pmh">Cámaras</h4>
+      <div id="pmCams" class="pmcams"></div>
+      <button type="button" id="pmAddCam">Añadir cámara</button>
+      <div class="testres" id="pmRes" style="margin-top:14px"></div>
+      <div class="row spread" style="margin-top:16px">
+        <div class="row"><button id="pmTest">Probar conexión</button><button id="pmDel" class="danger">Eliminar</button>
+        </div>
+        <div class="row"><button id="pmNo">Cancelar</button><button class="primary" id="pmSave">Guardar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="scanModal" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+    <div class="box settings">
+      <h3 id="scTitle" style="margin:0 0 4px;font-size:17px">Buscar impresoras en la red</h3>
+      <p class="muted" style="font-size:13px;margin:0 0 16px">Revisa las 254 direcciones de la red buscando Klipper
+        (Moonraker). Tarda
+        alrededor de un minuto.</p>
+      <div class="row">
+        <label for="scNet" class="muted" style="font-size:13px">Red</label>
+        <input type="text" id="scNet" spellcheck="false" placeholder="192.168.1" style="width:150px">
+        <span class="muted" style="font-size:13px">.1 a .254</span>
+        <button class="primary" id="scGo">Buscar</button>
+      </div>
+      <div class="scanbar" id="scBar" hidden>
+        <div></div>
+      </div>
+      <div class="muted" id="scStatus" style="font-size:13px;margin-top:10px"></div>
+      <div class="sclist" id="scList"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:16px">
+        <button id="scClose">Cerrar</button>
+        <button class="primary" id="scAdd" disabled>Agregar seleccionadas</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toasts" id="toasts"></div>
 
-  <script src="js/core.js?v=3"></script>
-  <script src="js/status.js?v=3"></script>
-  <script src="js/control.js?v=3"></script>
-  <script src="js/cfs.js?v=3"></script>
-  <script src="js/files.js?v=3"></script>
-  <script src="js/stats.js?v=3"></script>
-  <script src="js/tabs.js?v=3"></script>
-  <script src="js/notify.js?v=3"></script>
-  <script src="js/camera.js?v=3"></script>
-  <script src="js/main.js?v=3"></script>
+  <script src="js/core.js?v=16"></script>
+  <script src="js/printers.js?v=16"></script>
+  <script src="js/status.js?v=16"></script>
+  <script src="js/control.js?v=16"></script>
+  <script src="js/cfs.js?v=16"></script>
+  <script src="js/files.js?v=16"></script>
+  <script src="js/stats.js?v=16"></script>
+  <script src="js/tabs.js?v=16"></script>
+  <script src="js/notify.js?v=16"></script>
+  <script src="js/camera.js?v=16"></script>
+  <script src="js/hub.js?v=16"></script>
+  <script src="js/main.js?v=16"></script>
 </body>
 
 </html>

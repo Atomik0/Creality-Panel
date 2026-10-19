@@ -8,11 +8,11 @@ async function dbGet(key, def) {
     return v == null || (typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length) ? def : v;
   } catch {
     dbShared = false;
-    try { return JSON.parse(store.get("crpanel_" + key, "null")) ?? def; } catch { return def; }
+    try { return JSON.parse(store.get(`crpanel_${P ? P.id + "_" : ""}${key}`, "null")) ?? def; } catch { return def; }
   }
 }
 async function dbSet(key, value) {
-  store.set("crpanel_" + key, JSON.stringify(value));
+  store.set(`crpanel_${P ? P.id + "_" : ""}${key}`, JSON.stringify(value));
   try {
     const r = await fetch(`${api}/server/database/item`, {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -102,19 +102,19 @@ function drawDayChart() {
     if (slot) slot.h += (j.print_duration || 0) / 3600;
   }
   const max = Math.max(1, ...days.map(d => d.h)), B = 18, L = 26, bw = (w - L) / days.length;
-  g.font = "11px Segoe UI, sans-serif"; g.fillStyle = "#6b7479"; g.strokeStyle = "#2b3034";
+  g.font = "11px Segoe UI, sans-serif"; g.fillStyle = cssVar("--muted"); g.strokeStyle = cssVar("--line");
   for (let v = 0; v <= max; v += Math.max(1, Math.ceil(max / 4))) {
     const y = (h - B) - (v / max) * (h - B - 8);
     g.beginPath(); g.moveTo(L, y); g.lineTo(w, y); g.stroke();
     g.fillText(v + "h", 0, y + 4);
   }
-  const accent = getComputedStyle(document.body).getPropertyValue("--accent");
+  const accent = cssVar("--accent");
   days.forEach((d, i) => {
     const bh = (d.h / max) * (h - B - 8);
     g.fillStyle = accent;
     if (bh > 0) g.fillRect(L + i * bw + 2, (h - B) - bh, Math.max(2, bw - 4), bh);
     if (i % 7 === 2 || i === 29) {
-      g.fillStyle = "#6b7479";
+      g.fillStyle = cssVar("--muted");
       g.fillText(i === 29 ? "hoy" : new Date(d.t).toLocaleDateString([], { day: "numeric", month: "short" }), L + i * bw - 6, h - 3);
     }
   });

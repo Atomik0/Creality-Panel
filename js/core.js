@@ -17,8 +17,7 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
 };
 
-const DEFAULTS = { ip: "", name: "", cam: "webrtc", mjpeg: "", poll: 1500,
-                   apiPort: 7125, camPort: 8000, wsPort: 9999, webPort: 80,
+const DEFAULTS = { poll: 1500,
                    notif: { end: true, error: true, pause: true, eta: true, temp: false, sound: true },
                    ntfyServer: "https://ntfy.sh", ntfyTopic: "", tgToken: "", tgChat: "", snap: true };
 let cfg;
@@ -28,23 +27,20 @@ cfg.notif = { ...DEFAULTS.notif, ...(cfg.notif || {}) };
 const saveCfg = () => store.set("crpanel_cfg", JSON.stringify(cfg));
 
 const VIA_SERVER = /^https?:$/.test(location.protocol) && !["localhost", "127.0.0.1"].includes(location.hostname);
+const PORTS = { api: 7125, cam: 8000, ws: 9999, web: 80 };
+const WS_PROTO = location.protocol === "https:" ? "wss" : "ws";
+const hostUrl = (host, port, path = "") =>
+  VIA_SERVER ? `${location.origin}/p/${host}/${port}${path}` : `http://${host}${port === 80 ? "" : ":" + port}${path}`;
+const hostWs = (host, port, path = "/") =>
+  VIA_SERVER ? `${WS_PROTO}://${location.host}/p/${host}/${port}${path}` : `ws://${host}:${port}${path}`;
+let P = null;
 let api, camUrl, wsUrl, webUrl;
 function setEndpoints() {
-  if (VIA_SERVER) {
-    const o = location.origin;
-    api = `${o}/printer-api`;
-    camUrl = `${o}/printer-cam/call/webrtc_local`;
-    wsUrl = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/printer-ws`;
-    webUrl = `${o}/printer-web`;
-  } else {
-    const ip = cfg.ip;
-    api = `http://${ip}:${cfg.apiPort}`;
-    camUrl = `http://${ip}:${cfg.camPort}/call/webrtc_local`;
-    wsUrl = `ws://${ip}:${cfg.wsPort}`;
-    webUrl = `http://${ip}${Number(cfg.webPort) === 80 ? "" : ":" + cfg.webPort}`;
-  }
+  api = hostUrl(P.host, PORTS.api);
+  camUrl = hostUrl(P.host, PORTS.cam, "/call/webrtc_local");
+  wsUrl = hostWs(P.host, PORTS.ws);
+  webUrl = hostUrl(P.host, PORTS.web);
 }
-setEndpoints();
 
 const HW = { objects: [], fan: null, fanKind: null, led: null, board: null, head: null, box: false, cutter: false, sys: false, name: "Impresora" };
 function detectHardware(objects) {
@@ -65,11 +61,11 @@ function detectHardware(objects) {
          .filter(o => o && has(o));
 }
 let QUERY = ["print_stats", "virtual_sdcard", "extruder", "heater_bed", "webhooks", "gcode_move", "toolhead"];
-const nameFromHost = h => (h || "").replace(/-[0-9A-F]{4,}$/i, "").replace(/([0-9])([A-Z]{2,})$/, "$1 $2") || "Impresora";
+const nameFromHost = h => (h || "").replace(/-[0-9A-F]{4,}$/i, "").replace(/([0-9])([A-Z][A-Za-z]+)$/, "$1 $2") || "Impresora";
 const pinName = o => o.split(" ").slice(1).join(" ");
 let S = null;
 let meta = null, metaFile = null;
-let prevState = null, pollTimer = null, slowTimer = null;
+let pollTimer = null, slowTimer = null;
 let step = 10;
 let busySlider = false;
 let cfsBusy = false;
@@ -81,6 +77,7 @@ const fmtDur = s => {
   return h ? `${h} h ${String(m).padStart(2, "0")} m` : `${m} m ${String(s % 60).padStart(2, "0")} s`;
 };
 const t1 = v => (typeof v === "number" ? v.toFixed(1) : "—");
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const thumbUrl = (file, rel) => {
   const dir = file.includes("/") ? file.slice(0, file.lastIndexOf("/") + 1) : "";

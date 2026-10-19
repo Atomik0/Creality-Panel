@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="29.1 0.1 281.8 281.8">
+  <defs>
+    <linearGradient id="post" x1="0" x2="1"><stop offset="0" stop-color="#4a535a"/><stop offset="1" stop-color="#353c41"/></linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3136"/><stop offset="1" stop-color="#15181a"/></linearGradient>
+  </defs>
+  <ellipse cx="160" cy="262" rx="120" ry="9" fill="#000" opacity=".35"/>
+  <circle cx="92" cy="26" r="15" fill="#fb8c00"/>
+  <circle cx="92" cy="26" r="6" fill="#2a3035"/>
+  <circle cx="92" cy="26" r="15" fill="none" stroke="#c46a00" stroke-width="3"/>
+  <rect x="86" y="40" width="12" height="6" fill="#5d676e"/>
+  <path d="M98 30 C 130 34, 120 90, 150 118" fill="none" stroke="#fb8c00" stroke-width="2"/>
+  <rect x="60" y="224" width="200" height="16" rx="3" fill="#2f363b"/>
+  <rect x="60" y="224" width="200" height="4" fill="#4a535a"/>
+  <rect x="66" y="240" width="10" height="14" rx="2" fill="#1f2326"/>
+  <rect x="244" y="240" width="10" height="14" rx="2" fill="#1f2326"/>
+  <polygon points="92,202 228,202 242,220 78,220" fill="url(#plate)" stroke="#3d454b"/>
+  <rect x="78" y="220" width="164" height="4" fill="#1f2326"/>
+  <path d="M138 216 l7 -26 h22 l7 26 z" fill="#fb8c00"/>
+  <rect x="74" y="46" width="13" height="180" fill="url(#post)"/>
+  <rect x="233" y="46" width="13" height="180" fill="url(#post)"/>
+  <rect x="70" y="42" width="180" height="11" rx="3" fill="#4f585f"/>
+  <line x1="94" y1="53" x2="94" y2="224" stroke="#6b7479" stroke-width="2"/>
+  <rect x="74" y="118" width="172" height="9" rx="2" fill="#5d676e"/>
+  <rect x="138" y="108" width="36" height="42" rx="5" fill="#2a3035" stroke="#4c565d"/>
+  <circle cx="156" cy="127" r="10" fill="#1f2326" stroke="#6b7479"/>
+  <circle cx="156" cy="127" r="3" fill="#6b7479"/>
+  <path d="M150 150 h12 l-6 9 z" fill="#c9a35a"/>
+  <rect x="252" y="198" width="48" height="34" rx="4" fill="#2a3035" stroke="#4c565d"/>
+  <rect x="258" y="204" width="24" height="16" rx="2" fill="#0d2a4d" stroke="#3d9bff" stroke-opacity=".6"/>
+  <rect x="261" y="208" width="14" height="2.5" fill="#9fd3ff"/>
+  <circle cx="290" cy="214" r="6" fill="#1f2326" stroke="#6b7479"/>
+</svg>

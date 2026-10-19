@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="24.9 -4.1 270.2 286.2">
+  <defs>
+    <linearGradient id="post" x1="0" x2="1"><stop offset="0" stop-color="#4a535a"/><stop offset="1" stop-color="#353c41"/></linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f474d"/><stop offset="1" stop-color="#22272a"/></linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3136"/><stop offset="1" stop-color="#15181a"/></linearGradient>
+  </defs>
+  <ellipse cx="160" cy="262" rx="124" ry="9" fill="#000" opacity=".35"/>
+  <circle cx="160" cy="22" r="15" fill="#3ddf57"/>
+  <circle cx="160" cy="22" r="6" fill="#2a3035"/>
+  <circle cx="160" cy="22" r="15" fill="none" stroke="#25a63b" stroke-width="3"/>
+  <path d="M160 37 C 176 60, 150 96, 166 122" fill="none" stroke="#3ddf57" stroke-width="2"/>
+  <rect x="50" y="196" width="220" height="60" rx="10" fill="url(#base)"/>
+  <rect x="50" y="196" width="220" height="6" rx="3" fill="#4f585f"/>
+  <polygon points="212,214 258,210 258,240 212,244" fill="#0b0d0e" stroke="#4c565d"/>
+  <polygon points="218,219 240,217 240,220 218,222" fill="#1ec85a"/>
+  <polygon points="218,226 250,223 250,226 218,229" fill="#3d454b"/>
+  <polygon points="218,233 244,231 244,234 218,236" fill="#3d454b"/>
+  <rect x="64" y="240" width="40" height="4" rx="2" fill="#2a3035"/>
+  <polygon points="88,178 232,178 246,194 74,194" fill="url(#plate)" stroke="#3d454b"/>
+  <rect x="74" y="194" width="172" height="4" fill="#2f363b"/>
+  <path d="M130 190 q 8 -26 22 -26 q 14 0 22 26 z" fill="#3ddf57"/>
+  <rect x="60" y="44" width="14" height="154" fill="url(#post)"/>
+  <rect x="246" y="44" width="14" height="154" fill="url(#post)"/>
+  <rect x="56" y="38" width="208" height="14" rx="4" fill="#4f585f"/>
+  <rect x="126" y="40" width="68" height="10" rx="5" fill="#2a3035"/>
+  <line x1="84" y1="52" x2="84" y2="196" stroke="#6b7479" stroke-width="2"/>
+  <line x1="236" y1="52" x2="236" y2="196" stroke="#6b7479" stroke-width="2"/>
+  <rect x="60" y="120" width="200" height="9" rx="2" fill="#5d676e"/>
+  <rect x="142" y="110" width="40" height="42" rx="6" fill="#2a3035" stroke="#4c565d"/>
+  <rect x="148" y="118" width="28" height="18" rx="3" fill="#1f2326" stroke="#6b7479"/>
+  <circle cx="162" cy="127" r="5" fill="#6b7479"/>
+  <path d="M156 152 h12 l-6 9 z" fill="#c9a35a"/>
+</svg>
