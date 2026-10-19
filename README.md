@@ -286,6 +286,7 @@ go2rtc solo escucha en el propio servidor y nginx únicamente deja pasar el víd
 Creality-Panel/
 ├── index.html          Estructura de la página: hub, panel de impresora y diálogos
 ├── deploy.sh           Publica el panel en tu servidor (ver "Publicar cambios")
+├── deploy.bat          Lo mismo desde Windows, con doble clic
 ├── css/
 │   └── panel.css       Estilos
 ├── img/
@@ -315,7 +316,7 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=19`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=20`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
 
 Para subir los cambios al servidor está `deploy.sh`. La primera vez, copia la configuración de ejemplo y pon los datos de tu servidor:
 
@@ -336,5 +337,9 @@ Después, cada vez que quieras publicar:
 ```bash
 ./deploy.sh
 ```
+
+En Windows basta con hacer doble clic en `deploy.bat`: busca Git Bash (se instala con [Git para Windows](https://git-scm.com/download/win)) y ejecuta `deploy.sh`. Si `.deploy.env` no existe o aún tiene los datos de ejemplo, lo abre en el Bloc de notas para que lo completes. Como Git Bash no trae `rsync`, en ese caso los archivos se envían empaquetados con `tar` por SSH.
+
+La conexión usa tu clave SSH sin pedir contraseña, así que la clave debe estar autorizada en el servidor. La primera vez que te conectas, la huella del servidor se guarda sola en `known_hosts`.
 
 El script sube `index.html`, `css/`, `js/` e `img/` a una carpeta temporal, la cambia por la actual de una sola vez (nunca se sirve una mezcla de versiones) y comprueba que todos los archivos del servidor coincidan con los locales. `.deploy.env` está en `.gitignore`, así que tus datos no se suben al repositorio.

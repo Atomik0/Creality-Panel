@@ -20,7 +20,7 @@ for f in "${FILES[@]}"; do
   [[ -e "$f" ]] || { echo "No encuentro $f en $(pwd)" >&2; exit 1; }
 done
 
-SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=10)
+SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new)
 [[ -n "${DEPLOY_KEY:-}" ]] && SSH_OPTS+=(-i "${DEPLOY_KEY/#\~/$HOME}")
 REMOTE="$DEPLOY_USER@$DEPLOY_HOST"
 NEW="$DEPLOY_PATH.new"
@@ -30,9 +30,16 @@ remote() { ssh "${SSH_OPTS[@]}" "$REMOTE" "$@"; }
 echo "Desplegando en $REMOTE:$DEPLOY_PATH"
 remote "rm -rf $(printf %q "$NEW") && mkdir -p $(printf %q "$NEW")"
 
-RSYNC_OPTS=(-a --delete --chmod=D755,F644)
-[[ -n "${DEPLOY_OWNER:-}" ]] && RSYNC_OPTS+=(--chown="$DEPLOY_OWNER")
-rsync "${RSYNC_OPTS[@]}" -e "ssh ${SSH_OPTS[*]}" "${FILES[@]}" "$REMOTE:$NEW/"
+if command -v rsync >/dev/null; then
+  RSYNC_OPTS=(-a --delete --chmod=D755,F644)
+  [[ -n "${DEPLOY_OWNER:-}" ]] && RSYNC_OPTS+=(--chown="$DEPLOY_OWNER")
+  rsync "${RSYNC_OPTS[@]}" -e "ssh ${SSH_OPTS[*]}" "${FILES[@]}" "$REMOTE:$NEW/"
+else
+  # Git Bash en Windows no trae rsync: se envía un tar por SSH y los permisos se ajustan allí.
+  FIX="find $(printf %q "$NEW") -type d -exec chmod 755 {} + && find $(printf %q "$NEW") -type f -exec chmod 644 {} +"
+  [[ -n "${DEPLOY_OWNER:-}" ]] && FIX+=" && chown -R $(printf %q "$DEPLOY_OWNER") $(printf %q "$NEW")"
+  tar -cf - "${FILES[@]}" | remote "tar -xf - -C $(printf %q "$NEW") && $FIX"
+fi
 
 remote "set -e; if [ -d $(printf %q "$DEPLOY_PATH") ]; then mv $(printf %q "$DEPLOY_PATH") $(printf %q "$OLD"); fi; \
   mv $(printf %q "$NEW") $(printf %q "$DEPLOY_PATH"); rm -rf $(printf %q "$OLD")"

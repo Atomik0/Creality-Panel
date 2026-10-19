@@ -47,8 +47,12 @@ async function doPoll() {
   $("eta").textContent = remain ? "Termina aprox. a las " + new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : (STATE_ES[state] || "");
   const info = ps.info || {};
   const totalLayers = info.total_layer || (meta && meta.layer_count) || 0;
+  // Klipper no cuenta print_duration ni filament_used hasta la primera extrusión:
+  // mientras calienta/hace home la Z no corresponde a ninguna capa.
+  const started = ps.print_duration > 0 || ps.filament_used > 0;
   let layer = sd.layer || 0;
-  if (info.current_layer) layer = info.current_layer;
+  if (!started) layer = 0;
+  else if (info.current_layer) layer = info.current_layer;
   else if (meta && meta.layer_height && meta.layer_count) {
     const flh = meta.first_layer_height || meta.layer_height;
     layer = Math.min(meta.layer_count, Math.max(1, Math.round((gm.gcode_position[2] - flh) / meta.layer_height) + 1));
