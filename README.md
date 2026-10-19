@@ -340,6 +340,6 @@ Después, cada vez que quieras publicar:
 
 En Windows basta con hacer doble clic en `deploy.bat`: busca Git Bash (se instala con [Git para Windows](https://git-scm.com/download/win)) y ejecuta `deploy.sh`. Si `.deploy.env` no existe o aún tiene los datos de ejemplo, lo abre en el Bloc de notas para que lo completes. Como Git Bash no trae `rsync`, en ese caso los archivos se envían empaquetados con `tar` por SSH.
 
-La conexión usa tu clave SSH sin pedir contraseña, así que la clave debe estar autorizada en el servidor. La primera vez que te conectas, la huella del servidor se guarda sola en `known_hosts`.
+La conexión usa tu clave SSH sin pedir contraseña, así que la clave debe estar autorizada en el servidor. Si no lo está, `deploy.bat` ofrece autorizarla en ese momento: pide la contraseña del usuario del servidor una sola vez y vuelve a publicar. Desde Git Bash, Linux o macOS se hace con `./deploy.sh clave`, que además crea la clave si aún no tienes una. La primera vez que te conectas, la huella del servidor se guarda sola en `known_hosts`.
 
 El script sube `index.html`, `css/`, `js/` e `img/` a una carpeta temporal, la cambia por la actual de una sola vez (nunca se sirve una mezcla de versiones) y comprueba que todos los archivos del servidor coincidan con los locales. `.deploy.env` está en `.gitignore`, así que tus datos no se suben al repositorio.

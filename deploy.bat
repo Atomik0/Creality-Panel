@@ -29,6 +29,15 @@ findstr /c:"IP_DEL_SERVIDOR" ".deploy.env" >nul && (
 )
 
 "%GITBASH%" ./deploy.sh
+rem deploy.sh sale con 3 cuando el servidor no acepta la clave SSH.
+if errorlevel 3 (
+  echo.
+  choice /c SN /m "¿Autorizar tu clave SSH en el servidor ahora? Te pedirá la contraseña una vez"
+  if errorlevel 2 goto fin
+  "%GITBASH%" ./deploy.sh clave || goto fin
+  echo.
+  "%GITBASH%" ./deploy.sh
+)
 
 :fin
 echo.
