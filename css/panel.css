@@ -191,6 +191,11 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .slot .mat { font-weight: 650; }
 .slot .meter { height: 6px; background: var(--panel-3); border-radius: 999px; overflow: hidden; margin: 10px 4px 4px; }
 .slot .meter div { height: 100%; background: var(--accent); }
+.slot.tool .vendor { font-size: 12px; min-height: 16px; }
+.slot.tool .ttemp { font-size: 13px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.slot.tool .setrow { justify-content: center; margin-top: 10px; }
+.slot.tool .setrow input { width: 68px; }
+.slot.tool .acts { margin-top: 10px; grid-template-columns: 1fr; }
 .kv { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
 @media (max-width: 640px) { .kv { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 

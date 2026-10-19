@@ -42,22 +42,33 @@ function setEndpoints() {
   webUrl = hostUrl(P.host, PORTS.web);
 }
 
-const HW = { objects: [], fan: null, fanKind: null, led: null, board: null, head: null, box: false, cutter: false, sys: false, name: "Impresora" };
+const HW = { objects: [], fan: null, fanKind: null, led: null, board: null, head: null, box: false, cutter: false, sys: false, tools: ["extruder"], ptc: false, name: "Impresora" };
+const toolIndex = t => Number(String(t).slice(8)) || 0;
+const toolName = i => (i ? "extruder" + i : "extruder");
+const ledOn = st => {
+  const o = HW.led && st && st[HW.led];
+  if (!o) return false;
+  return HW.led.startsWith("led ") ? ((o.color_data && o.color_data[0]) || []).some(v => v > 0) : o.value > 0;
+};
+const activeTool = st => (st && st.toolhead && st.toolhead.extruder) || "extruder";
 function detectHardware(objects) {
   const has = o => objects.includes(o);
   const fans = objects.filter(o => o.startsWith("fan_generic "));
   HW.objects = objects;
   HW.fan = has("fan") ? "fan" : fans.find(o => /model|part|cool/i.test(o)) || fans[0] || (has("output_pin fan0") ? "output_pin fan0" : null);
   HW.fanKind = !HW.fan ? null : HW.fan === "fan" ? "fan" : HW.fan.startsWith("output_pin ") ? "pin" : "generic";
-  HW.led = objects.filter(o => o.startsWith("output_pin ")).find(o => /led|light|lamp/i.test(o)) || null;
+  HW.led = objects.filter(o => o.startsWith("output_pin ")).find(o => /led|light|lamp/i.test(o)) || objects.find(o => o.startsWith("led ")) || null;
   const sensors = objects.filter(o => o.startsWith("temperature_sensor "));
-  HW.board = sensors.find(o => /main|board|mcu/i.test(o)) || sensors.find(o => /chamber/i.test(o)) || sensors[0] || null;
+  HW.board = sensors.find(o => /main|board|mcu/i.test(o)) || sensors.find(o => /chamber|cavity/i.test(o)) || sensors[0] || null;
   HW.head = objects.find(o => /^filament_(switch|motion)_sensor /.test(o)) || null;
   HW.box = has("box");
   HW.cutter = has("cutter_module");
   HW.sys = has("system_stats");
-  return ["print_stats", "virtual_sdcard", "extruder", "heater_bed", "webhooks", "gcode_move", "toolhead",
-          HW.fan, HW.led, HW.board, HW.head, HW.box && "box", HW.cutter && "cutter_module", HW.sys && "system_stats"]
+  HW.tools = objects.filter(o => /^extruder\d*$/.test(o)).sort((a, b) => toolIndex(a) - toolIndex(b));
+  if (!HW.tools.length) HW.tools = ["extruder"];
+  HW.ptc = has("print_task_config");
+  return ["print_stats", "virtual_sdcard", ...HW.tools, "heater_bed", "webhooks", "gcode_move", "toolhead",
+          HW.fan, HW.led, HW.board, HW.head, HW.box && "box", HW.cutter && "cutter_module", HW.sys && "system_stats", HW.ptc && "print_task_config"]
          .filter(o => o && has(o));
 }
 let QUERY = ["print_stats", "virtual_sdcard", "extruder", "heater_bed", "webhooks", "gcode_move", "toolhead"];

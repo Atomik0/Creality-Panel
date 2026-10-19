@@ -6,11 +6,14 @@ function applyHardwareUi() {
   $("tlTabBtn").hidden = !familyOf(P).timelapse;
   if ($("tlTabBtn").hidden && $("tab-timelapse").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
   if (!HW.box && $("tab-cfs").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
+  $("toolsTabBtn").hidden = HW.tools.length < 2;
+  if ($("toolsTabBtn").hidden && $("tab-tools").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
+  toolsKey = "";
   $("ledBtn").hidden = !HW.led;
   $("tMbBox").hidden = !HW.board;
   if (HW.board) {
     const n = pinName(HW.board);
-    $("tMbLabel").textContent = /main|board|mcu/i.test(n) ? "Placa base" : /chamber/i.test(n) ? "Cámara (recinto)" : n.replace(/_/g, " ");
+    $("tMbLabel").textContent = /main|board|mcu/i.test(n) ? "Placa base" : /chamber|cavity/i.test(n) ? "Recinto" : n.replace(/_/g, " ");
   }
   $("fanR").closest(".slider").hidden = !HW.fan;
 }
@@ -43,7 +46,7 @@ async function connect() {
     QUERY = detectHardware(objects);
   } catch {}
   if (pr !== P) return;
-  if (P.model === "auto" && host) { P.model = resolveModel(host, HW.box); savePrinters().catch(() => {}); hubKey = ""; }
+  if (P.model === "auto" && host) { autoModel(P, host, HW.objects); applyPrinterUi(); savePrinters().catch(() => {}); hubKey = ""; }
   $("hostname").textContent = host ? `${familyOf(P).name} · ${host}` : `Sin conexión con ${P.host}`;
   applyHardwareUi();
   await poll();

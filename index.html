@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impresoras</title>
-  <script src="js/theme.js?v=17"></script>
-  <link rel="stylesheet" href="css/panel.css?v=17">
+  <script src="js/theme.js?v=19"></script>
+  <link rel="stylesheet" href="css/panel.css?v=19">
 </head>
 
 <body>
@@ -256,6 +256,7 @@
         <div class="tabs" role="tablist">
           <button role="tab" data-tab="control" aria-selected="true">Control</button>
           <button role="tab" data-tab="cfs" id="cfsTabBtn" hidden>CFS</button>
+          <button role="tab" data-tab="tools" id="toolsTabBtn" hidden>Cabezales</button>
           <button role="tab" data-tab="mesh">Nivelación</button>
           <button role="tab" data-tab="files">Archivos</button>
           <button role="tab" data-tab="timelapse" id="tlTabBtn">Timelapses</button>
@@ -267,7 +268,7 @@
         <div class="tab on" id="tab-control">
           <div class="grid3">
             <div class="sub">
-              <h4>Boquilla</h4>
+              <h4 id="nozTitle">Boquilla</h4>
               <div class="heater"><span class="dotc" style="background:var(--nozzle)"></span><span class="now"
                   id="tNoz">—</span><span class="tgt" id="tNozT">—</span></div>
               <div class="setrow">
@@ -455,6 +456,10 @@
           </div>
         </div>
 
+        <div class="tab" id="tab-tools">
+          <div class="slots" id="toolSlots"></div>
+          <p class="muted" id="toolNote" style="font-size:12px;margin:14px 2px 0"></p>
+        </div>
         <div class="tab" id="tab-mesh">
           <div class="meshwrap">
             <div class="mesh" id="mesh">
@@ -745,18 +750,19 @@
 
   <div class="toasts" id="toasts"></div>
 
-  <script src="js/core.js?v=17"></script>
-  <script src="js/printers.js?v=17"></script>
-  <script src="js/status.js?v=17"></script>
-  <script src="js/control.js?v=17"></script>
-  <script src="js/cfs.js?v=17"></script>
-  <script src="js/files.js?v=17"></script>
-  <script src="js/stats.js?v=17"></script>
-  <script src="js/tabs.js?v=17"></script>
-  <script src="js/notify.js?v=17"></script>
-  <script src="js/camera.js?v=17"></script>
-  <script src="js/hub.js?v=17"></script>
-  <script src="js/main.js?v=17"></script>
+  <script src="js/core.js?v=19"></script>
+  <script src="js/printers.js?v=19"></script>
+  <script src="js/status.js?v=19"></script>
+  <script src="js/control.js?v=19"></script>
+  <script src="js/cfs.js?v=19"></script>
+  <script src="js/tools.js?v=19"></script>
+  <script src="js/files.js?v=19"></script>
+  <script src="js/stats.js?v=19"></script>
+  <script src="js/tabs.js?v=19"></script>
+  <script src="js/notify.js?v=19"></script>
+  <script src="js/camera.js?v=19"></script>
+  <script src="js/hub.js?v=19"></script>
+  <script src="js/main.js?v=19"></script>
 </body>
 
 </html>

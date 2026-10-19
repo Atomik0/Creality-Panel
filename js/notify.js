@@ -81,7 +81,9 @@ function printerEvents(pr, rt) {
     if (ev.prev) notify("eta", "Faltan unos 10 minutos",
       `${file} · termina aprox. a las ${new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`, { pid });
   }
-  for (const [h, label] of [["extruder", "Boquilla"], ["heater_bed", "Cama"]]) {
+  const tools = Object.keys(st).filter(k => /^extruder\d*$/.test(k));
+  const heaters = tools.map(t => [t, tools.length > 1 ? `Cabezal ${toolIndex(t) + 1}` : "Boquilla"]).concat([["heater_bed", "Cama"]]);
+  for (const [h, label] of heaters) {
     const o = st[h]; if (!o) continue;
     const a = ev.tempArm[h] || (ev.tempArm[h] = { target: 0, armed: false });
     if (o.target !== a.target) { a.target = o.target; a.armed = o.target > 0 && o.temperature < o.target - 3; }

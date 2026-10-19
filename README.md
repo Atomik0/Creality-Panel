@@ -1,6 +1,6 @@
 # Panel Creality
 
-Panel web no oficial para controlar y vigilar impresoras con Klipper desde el navegador, en el ordenador o en el móvil. Reúne todas tus impresoras en un hub: cada una con su estado, su CFS si lo tiene y sus cámaras, y avisos de todas en un mismo lugar. Reconoce las Creality K1 SE, K1 SE Combo, K1, K1C, K1 Max, K2 SE, K2 SE Combo, SparkX i7 y SparkX i7 Combo, y sirve para cualquier otra impresora con Klipper y Moonraker, ocultando lo que una impresora no tiene.
+Panel web no oficial para controlar y vigilar impresoras con Klipper desde el navegador, en el ordenador o en el móvil. Reúne todas tus impresoras en un hub: cada una con su estado, su CFS si lo tiene y sus cámaras, y avisos de todas en un mismo lugar. Reconoce las Creality K1 SE, K1 SE Combo, K1, K1C, K1 Max, K2 SE, K2 SE Combo, SparkX i7, SparkX i7 Combo y Ender-5 Max, la Snapmaker U1 con sus cuatro cabezales, y sirve para cualquier otra impresora con Klipper y Moonraker, ocultando lo que una impresora no tiene.
 
 No necesita compilación: son archivos HTML, CSS y JavaScript. Para varias impresoras y cámaras se sirve desde un servidor con nginx (un PC, un contenedor o una Raspberry Pi).
 
@@ -27,6 +27,7 @@ No necesita compilación: son archivos HTML, CSS y JavaScript. Para varias impre
 - **Cámaras:** varias por impresora, con un selector para cambiar entre ellas. Admite la cámara de las K1 (WebRTC de Creality), cámaras IP con RTSP como las Tapo (a través de go2rtc) y cualquier cámara MJPEG (un móvil con IP Webcam, una ESP32-CAM o una webcam en una Raspberry Pi). Captura de imagen, pantalla completa y botón de luz.
 - **Control:** temperaturas de boquilla y cama con preajustes para PLA, PETG y ABS, gráfica de los últimos 10 minutos, velocidad, flujo, ventilador, ajuste fino del offset Z, movimiento de ejes, home y extrusión manual.
 - **Parada de emergencia (PANIC BUTTON):** hay que pulsarla dos veces en 3 segundos, para que un toque accidental no detenga una impresión. Si Klipper se cae, aparece un aviso con botones para reiniciar el firmware, Klipper o el servicio.
+- **Cabezales (Snapmaker U1):** los cuatro cabezales con su temperatura, el material y el color de cada carrete (leídos por RFID), cuál está en uso y botón para cambiar de cabezal fuera de impresión. La tarjeta de temperatura del Control usa el cabezal activo.
 - **CFS:** estado de las ranuras (material, color y restante con RFID), carga y descarga de filamento, edición de material y color, recorrido del filamento, temperatura y humedad, y sus opciones (recarga automática, cambio automático de ranura, precarga).
 - **Nivelación:** mapa de color de la malla de la cama con el punto más bajo, el más alto y la diferencia total.
 - **Archivos:** lista de G-code con miniatura, tiempo, peso y material, búsqueda y subida por arrastrar y soltar.
@@ -55,6 +56,8 @@ Sin impresoras, el panel muestra una portada para buscarlas en la red o agregarl
 ![Pestaña Control](docs/img/control.png)
 
 ![Pestaña CFS](docs/img/cfs.png)
+
+![Pestaña Cabezales de la Snapmaker U1](docs/img/cabezales.png)
 
 ![Pestaña Nivelación](docs/img/nivelacion.png)
 
@@ -88,14 +91,18 @@ Las capturas están hechas con impresoras y cámaras simuladas. Las ilustracione
 | K2 SE y K2 SE Combo | CFS (en la Combo) | Sí | Sí |
 | SparkX i7 | No (monocolor) | Sí | No |
 | SparkX i7 Combo | CFS Lite | Sí | No |
+| Ender-5 Max | CFS (opcional) | Con la cámara Nebula | Sí |
+| Snapmaker U1 | 4 cabezales con RFID | Con el firmware Extended (ver abajo) | No |
 | CR-10S, CR-6 SE, Ender-3 y otras con Klipper | No | Con una webcam o una Tapo | No |
 
-El modelo se detecta solo por el nombre de la impresora en la red, y la versión Combo según si tiene un CFS conectado; si no lo reconoce, se puede elegir al editarla. En el hub, las versiones Combo muestran la impresora junto a su CFS, con las bobinas y los tubos en los colores reales de cada ranura.
+El modelo se detecta solo por el nombre de la impresora en la red, la versión Combo según si tiene un CFS conectado y la Snapmaker U1 por sus cuatro cabezales; si no lo reconoce, se puede elegir al editarla. En el hub, las versiones Combo muestran la impresora junto a su CFS, con las bobinas y los tubos en los colores reales de cada ranura.
 
 A tener en cuenta:
 
 - **SparkX i7:** el firmware 1.1.2.4 (abril de 2026) desactivó el acceso root por defecto. El panel no necesita root, solo Moonraker en el puerto 7125, pero esta combinación no se ha podido comprobar con una impresora real. Su WebSocket de estado es distinto al de las K1, por eso no tiene pestaña de timelapses.
 - **K2:** algunos firmwares recientes de la serie K2 dejaron de mostrar el vídeo en la página del puerto 8000. El panel no usa esa página sino la conexión WebRTC directa; si aun así la cámara no se ve, se puede pasar por go2rtc (ver "Cámara de la impresora a través de go2rtc").
+- **Ender-5 Max:** usa el mismo sistema que las K1. Moonraker se activa con root (firmware 1.2.0.21 o posterior) y el Creality Helper Script, igual que en las K1. No trae cámara; la Nebula opcional se añade como "De la impresora (Creality)". Si tiene un CFS conectado, el panel lo detecta y muestra su pestaña.
+- **Snapmaker U1:** usa Klipper y Moonraker modificados por Snapmaker, con Moonraker en el puerto 7125 y sin clave en la red local. El panel lee los cabezales `extruder` a `extruder3`, el cabezal activo y el filamento de `print_task_config`, y cambia de cabezal con `T0` a `T3`. En el hub, la ilustración pinta cada carrete con su color real; se asume que los carretes 1 y 2 (izquierda, de arriba abajo) y 3 y 4 (derecha) corresponden a los cabezales 1 a 4. La cámara integrada del firmware original usa un método propio de Snapmaker que el panel no implementa; con el [firmware Extended](https://snapmakeru1-extended-firmware.pages.dev/) la cámara se puede añadir como "MJPEG por URL" o como RTSP por go2rtc. Este soporte se ha hecho a partir del código publicado por Snapmaker y no se ha podido comprobar con una impresora real.
 - **CR-10S, CR-6 SE y Ender-3:** de fábrica usan Marlin; necesitan Klipper y Moonraker en un ordenador como una Raspberry Pi.
 
 ## Requisitos
@@ -200,7 +207,7 @@ Cada impresora puede tener varias cámaras; se añaden con el botón del lápiz,
 
 | Tipo | Para qué cámaras | Qué hace falta |
 | --- | --- | --- |
-| De la impresora (Creality) | La cámara integrada de las K1, K2 SE y SparkX i7 | Nada |
+| De la impresora (Creality) | La cámara integrada de las K1, K2 SE y SparkX i7, o la Nebula de la Ender-5 Max | Nada |
 | Tapo o RTSP (go2rtc) | Cámaras IP como Tapo C100 o C110, Reolink o Imou | go2rtc en el servidor |
 | MJPEG por URL | Un móvil con IP Webcam, una ESP32-CAM, una webcam en una Raspberry Pi con crowsnest | La URL del vídeo |
 
@@ -292,6 +299,7 @@ Creality-Panel/
 │   ├── status.js       Lectura periódica del estado y tarjeta del trabajo actual
 │   ├── control.js      Gráfica de temperaturas, controles, extrusión y parada de emergencia
 │   ├── cfs.js          Ranuras y opciones del CFS
+│   ├── tools.js        Cabezales de las impresoras con varios extrusores (Snapmaker U1)
 │   ├── files.js        Lista y subida de archivos
 │   ├── stats.js        Estadísticas, mantenimiento y base de datos de Moonraker
 │   ├── tabs.js         Nivelación, timelapses, consola, historial, pestañas y vista ampliada
@@ -307,7 +315,7 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=17`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=19`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
 
 Para subir los cambios al servidor está `deploy.sh`. La primera vez, copia la configuración de ejemplo y pon los datos de tu servidor:
 

@@ -69,7 +69,8 @@ async function doPoll() {
   $("resume").disabled = state !== "paused";
   $("cancel").disabled = !active;
 
-  const ex = st.extruder, bed = st.heater_bed || { temperature: 0, target: 0 };
+  const tool = activeTool(st), ex = st[tool] || st.extruder, bed = st.heater_bed || { temperature: 0, target: 0 };
+  $("nozTitle").textContent = HW.tools.length > 1 ? `Boquilla · cabezal ${toolIndex(tool) + 1}` : "Boquilla";
   const fo = HW.fan && st[HW.fan];
   const fan = fo ? (fo.speed ?? fo.value ?? 0) : 0;
   $("tNoz").textContent = t1(ex.temperature) + " °C";
@@ -84,7 +85,7 @@ async function doPoll() {
   $("sysload").textContent = st.system_stats ? st.system_stats.sysload.toFixed(2) : "—";
   $("mem").textContent = st.system_stats ? Math.round(st.system_stats.memavail / 1024) + " MB" : "—";
   $("zval").textContent = (gm.homing_origin[2] >= 0 ? "+" : "") + gm.homing_origin[2].toFixed(3);
-  $("ledBtn").style.color = HW.led && st[HW.led] && st[HW.led].value > 0 ? "var(--warn)" : "";
+  $("ledBtn").style.color = ledOn(st) ? "var(--warn)" : "";
 
   if (!busySlider) {
     setSlider("spd", gm.speed_factor * 100);
@@ -95,7 +96,7 @@ async function doPoll() {
   const canMove = !active && st.webhooks.state === "ready";
   document.querySelectorAll("#jog button, #homeAll, #motorsOff").forEach(b => (b.disabled = !canMove));
   $("jogNote").textContent = active ? "Bloqueado mientras imprime." : (th.homed_axes.length < 3 ? "Haz home antes de mover." : "");
-  const hot = st.extruder.can_extrude ?? st.extruder.temperature >= 170;
+  const hot = ex.can_extrude ?? ex.temperature >= 170;
   $("extrude").disabled = $("retract").disabled = !canMove || !hot;
   $("extrNote").textContent = active ? "" : !hot ? "Calienta la boquilla (≥ 170 °C) para extruir o retraer." : "";
 
@@ -103,6 +104,7 @@ async function doPoll() {
   else showBanner(`Klipper: ${STATE_ES[st.webhooks.state] || st.webhooks.state}${st.webhooks.state_message ? " — " + st.webhooks.state_message : ""}`, false);
 
   if (HW.box) renderCfs(st.box, st.cutter_module);
+  if (HW.tools.length > 1) renderTools(st, state);
 }
 async function pollFailed() {
   let si = null;

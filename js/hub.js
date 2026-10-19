@@ -23,9 +23,13 @@ async function watchOne(p) {
       rt.objects = objects;
       rt.head = objects.find(o => /^filament_(switch|motion)_sensor /.test(o)) || null;
       rt.hasBox = objects.includes("box");
-      if (p.model === "auto") { p.model = resolveModel(rt.hostname, rt.hasBox); savePrinters().catch(() => {}); hubKey = ""; }
+      rt.tools = objects.filter(o => /^extruder\d*$/.test(o));
+      rt.ptc = objects.includes("print_task_config");
+      if (p.model === "auto") { autoModel(p, rt.hostname, objects); savePrinters().catch(() => {}); hubKey = ""; }
     }
-    const q = ["print_stats", "virtual_sdcard", "extruder", "heater_bed", "webhooks", rt.head, rt.hasBox && "box"].filter(Boolean);
+    const multi = rt.tools && rt.tools.length > 1;
+    const q = ["print_stats", "virtual_sdcard", ...(rt.tools && rt.tools.length ? rt.tools : ["extruder"]), "heater_bed", "webhooks", rt.head,
+      rt.hasBox && "box", multi && "toolhead", rt.ptc && "print_task_config"].filter(Boolean);
     rt.st = (await pget(p, `/printer/objects/query?${q.map(encodeURIComponent).join("&")}`)).status;
     rt.online = true; rt.moonraker = true; rt.klippy = rt.st.webhooks.state;
     printerEvents(p, rt);
@@ -132,14 +136,23 @@ function layoutHero() {
 }
 new ResizeObserver(() => { layoutHub(); layoutHero(); }).observe(document.body);
 const tint = (hex, k) => "#" + [1, 3, 5].map(i => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - k) + 255 * k).toString(16).padStart(2, "0")).join("");
-function paintScene(svg, box) {
-  const u = box && connectedUnits(box)[0], unit = u && box[u];
+function sceneSlots(st) {
+  if (!st) return null;
+  if (st.box) {
+    const u = connectedUnits(st.box)[0], unit = u && st.box[u];
+    return unit ? [0, 1, 2, 3].map(i => ({ loaded: (unit.material_sensor >> i) & 1, color: slotColor(unit, i), active: st.box.last_tnn === u + "ABCD"[i] })) : null;
+  }
+  if (!st.print_task_config) return null;
+  const printing = isActive(st.print_stats && st.print_stats.state);
+  return toolSlots(st).map(s => ({ loaded: s.loaded, color: s.color, active: printing && s.active }));
+}
+function paintScene(svg, slots) {
   const show = (sel, on) => svg.querySelectorAll(sel).forEach(e => e.setAttribute("display", on ? "inline" : "none"));
   for (let i = 0; i < 4; i++) {
-    const loaded = unit ? (unit.material_sensor >> i) & 1 : 1, color = unit && slotColor(unit, i);
+    const s = slots && slots[i], loaded = s ? s.loaded : 1, color = s && s.color;
     show(`[data-slot="${i}"], [data-slot-hub="${i}"]`, loaded);
     show(`[data-empty="${i}"]`, !loaded);
-    show(`[data-active="${i}"]`, unit && box.last_tnn === u + "ABCD"[i]);
+    show(`[data-active="${i}"]`, s && s.active);
     if (color) svg.querySelectorAll(`[data-slot="${i}"]`).forEach(e => e.setAttribute("fill", color));
     svg.querySelectorAll(`[data-tube="${i}"]`).forEach(e => {
       if (color) e.setAttribute("stroke", tint(color, .35));
@@ -168,7 +181,7 @@ function buildHub() {
           <span><i style="background:var(--bed)"></i><span class="tb">—</span></span><span class="go">Abrir ›</span></div>
       </div>`;
     a.querySelector("img").src = printerImg(p);
-    a.classList.toggle("wide", !!familyOf(p).scene && !p.photo);
+    a.classList.toggle("wide", !!familyOf(p).wide && !p.photo);
     if (familyOf(p).scene && !p.photo) mountScene(a, p);
     a.querySelector(".pname").textContent = p.name;
     a.querySelector(".pmodel").textContent = p.model === "auto" ? "Detectando modelo…" : familyOf(p).name;
@@ -193,7 +206,7 @@ function renderCard(p) {
   const box = st && st.box;
   const mini = a.querySelector(".cfsmini"), scene = a.querySelector(".pscene svg");
   mini.innerHTML = box && !scene ? cfsMini(box, p) : "";
-  if (scene) paintScene(scene, box);
+  if (scene) paintScene(scene, sceneSlots(st));
   mini.classList.toggle("lite", !!familyOf(p).cfsLite);
   mini.classList.toggle("left", !!familyOf(p).cfsLeft);
   a.querySelector(".pimg").classList.toggle("withleft", !!(familyOf(p).cfsLeft && mini.innerHTML));
@@ -212,7 +225,7 @@ function renderCard(p) {
   a.querySelector(".pwhen").textContent = remain ? "Termina " + new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : cs.state === "paused" ? "En pausa" : cs.state === "complete" ? "Terminado" : cs.state === "printing" ? "Calculando…" : "";
   const tt = o => (o ? `${Math.round(o.temperature)}°${o.target ? " / " + Math.round(o.target) + "°" : ""}` : "—");
-  a.querySelector(".tn").textContent = st ? tt(st.extruder) : "—";
+  a.querySelector(".tn").textContent = st ? tt(st[activeTool(st)] || st.extruder) : "—";
   a.querySelector(".tb").textContent = st ? tt(st.heater_bed) : "—";
 }
 function renderHubSummary() {
@@ -399,12 +412,12 @@ $("scGo").onclick = async () => {
   $("scStatus").textContent = scanFound.length ? `Encontré ${scanFound.length} impresora${scanFound.length > 1 ? "s" : ""} con Klipper.`
     : "No encontré ninguna impresora con Klipper en esa red.";
   for (const f of scanFound) {
-    const known = printers.find(p => p.host === f.host), model = familyFromHost(f.info.hostname);
+    const known = printers.find(p => p.host === f.host), model = f.model;
     const row = document.createElement("label");
     row.className = "scrow" + (known ? " known" : "");
     row.innerHTML = `<input type="checkbox" ${known ? "disabled" : "checked"}><img alt=""><span><b></b><span class="muted"></span></span>`;
     row.querySelector("img").src = FAMILIES[model].img;
-    row.querySelector("b").textContent = nameFor(f.info.hostname);
+    row.querySelector("b").textContent = scanName(f);
     row.querySelector(".muted").textContent = `${FAMILIES[model].name} · ${f.host}${known ? ` · ya agregada como "${known.name}"` : ""}`;
     row.querySelector("input").onchange = () => ($("scAdd").disabled = !document.querySelector("#scList input:checked"));
     f.row = row;
@@ -415,8 +428,8 @@ $("scGo").onclick = async () => {
 $("scAdd").onclick = async () => {
   const pick = scanFound.filter(f => f.row.querySelector("input").checked && !printers.some(p => p.host === f.host));
   const added = pick.map(f => {
-    const model = familyFromHost(f.info.hostname);
-    return { id: newId(), name: nameFor(f.info.hostname), model: "auto", host: f.host,
+    const model = f.model;
+    return { id: newId(), name: scanName(f), model: "auto", host: f.host,
              cameras: FAMILIES[model].creality ? [{ id: newId(), name: "Cámara de la impresora", type: "creality" }] : [] };
   });
   printers.push(...added);

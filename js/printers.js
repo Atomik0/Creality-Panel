@@ -1,51 +1,59 @@
 const FAMILIES = {
   k1se: { name: "K1 SE", img: "img/printers/k1se.svg", creality: true, timelapse: true, cfs: "CFS-C", cfsLeft: true, combo: "k1se_combo" },
-  k1se_combo: { name: "K1 SE Combo", img: "img/printers/k1se-combo.svg", creality: true, timelapse: true, cfs: "CFS-C", scene: true },
+  k1se_combo: { name: "K1 SE Combo", img: "img/printers/k1se-combo.svg", creality: true, timelapse: true, cfs: "CFS-C", scene: true, wide: true },
   k1: { name: "K1 / K1C", img: "img/printers/k1.svg", creality: true, timelapse: true },
   k1max: { name: "K1 Max", img: "img/printers/k1max.svg", creality: true, timelapse: true },
   k2se: { name: "K2 SE", img: "img/printers/k2se.svg", creality: true, timelapse: true },
   sparkx: { name: "SparkX i7", img: "img/printers/sparkx.svg", creality: true, cfs: "CFS Lite", cfsLite: true, cfsLeft: true, combo: "sparkx_combo" },
-  sparkx_combo: { name: "SparkX i7 Combo", img: "img/printers/sparkx-combo.svg", creality: true, cfs: "CFS Lite", cfsLite: true, scene: true },
+  sparkx_combo: { name: "SparkX i7 Combo", img: "img/printers/sparkx-combo.svg", creality: true, cfs: "CFS Lite", cfsLite: true, scene: true, wide: true },
+  ender5max: { name: "Ender-5 Max", img: "img/printers/ender5max.svg", creality: true, timelapse: true, wide: true },
   cr10s: { name: "CR-10S", img: "img/printers/cr10s.svg" },
   cr6se: { name: "CR-6 SE", img: "img/printers/cr6se.svg" },
   ender3: { name: "Ender-3", img: "img/printers/ender3.svg" },
+  u1: { name: "Snapmaker U1", img: "img/printers/u1.svg", scene: true },
   generic: { name: "Otra con Klipper", img: "img/printers/generic.svg" },
 };
 const GEO = {
   k1se: [219.538, 276.756, 43.4, 259.2, 482], k1se_combo: [548, 356, 52.6, 323.9, 482],
   k1: [265, 272, 10.5, 246.5, 480], k1max: [303.6, 287.6, 11.8, 260.8, 526], k2se: [268.8, 261.8, 10.4, 236.4, 480],
   sparkx: [685, 722, 65, 708, 456], sparkx_combo: [1262, 832, 175, 818, 456],
-  cr10s: [325.2, 291.2, 12.6, 261.6, 615], cr6se: [270.2, 286.2, 11.1, 260.1, 570],
-  ender3: [281.8, 281.8, 10.9, 253.9, 465], generic: [256, 257, 10, 232, 450],
+  ender5max: [556, 590, 61, 584, 622], cr10s: [325.2, 291.2, 12.6, 261.6, 615], cr6se: [270.2, 286.2, 11.1, 260.1, 570],
+  ender3: [281.8, 281.8, 10.9, 253.9, 465], generic: [256, 257, 10, 232, 450], u1: [494, 690, 212, 681, 579, true],
 };
 for (const [k, g] of Object.entries(GEO)) FAMILIES[k].geo = g;
 const familyOf = p => FAMILIES[p && p.model] || FAMILIES.generic;
-const ART_REF = 560;
+const ART_REF = 660;
 function placeArt(box, el, geo, { floor = .93, top = .03, maxW = .96 } = {}) {
   const W = box.clientWidth, H = box.clientHeight;
   if (!W || !H || !geo) return false;
-  const [vw, vh, pt, pb, mm] = geo;
-  const fl = H * floor, tp = H * top;
+  const [vw, vh, pt, pb, mm, bodyOnly] = geo;
+  const fl = H * floor, tp = H * top, need = bodyOnly ? pb - pt : pb;
   let k = (H * .86 * mm / ART_REF) / (pb - pt);
   if (vw * k > W * maxW) k = W * maxW / vw;
-  if (fl - pb * k < tp) k = (fl - tp) / pb;
+  if (fl - need * k < tp) k = (fl - tp) / need;
   Object.assign(el.style, { position: "absolute", width: vw * k + "px", height: vh * k + "px",
     left: (W - vw * k) / 2 + "px", top: fl - pb * k + "px", objectFit: "fill" });
   return true;
 }
 const cfsName = p => familyOf(p).cfs || "CFS";
-const resolveModel = (host, hasBox) => {
+const resolveModel = (host, objects = []) => {
+  if (objects.includes("print_task_config") && objects.includes("extruder3")) return "u1";
   const m = familyFromHost(host);
-  return hasBox && FAMILIES[m].combo ? FAMILIES[m].combo : m;
+  return objects.includes("box") && FAMILIES[m].combo ? FAMILIES[m].combo : m;
 };
+const autoModel = (p, host, objects) => {
+  p.model = resolveModel(host, objects);
+  if (p.model === "u1" && p.name === nameFor(host)) p.name = FAMILIES.u1.name;
+};
+const scanName = f => (["generic", "k1"].includes(f.model) ? nameFor(f.info.hostname) : FAMILIES[f.model].name);
 const nameFor = host => {
   const model = familyFromHost(host);
   return model === "generic" || model === "k1" ? nameFromHost(host) : FAMILIES[model].name;
 };
 const familyFromHost = h =>
-  /^k2\s*se/i.test(h) ? "k2se" : /spark\s*x|^i7(-|$)/i.test(h) ? "sparkx"
+  /snapmaker|^u1(-|$)/i.test(h) ? "u1" : /^k2\s*se/i.test(h) ? "k2se" : /spark\s*x|^i7(-|$)/i.test(h) ? "sparkx"
   : /^k1\s*se/i.test(h) ? "k1se" : /^k1\s*max/i.test(h) ? "k1max" : /^k1c?(-|$)/i.test(h) ? "k1"
-  : /cr-?10/i.test(h) ? "cr10s" : /cr-?6/i.test(h) ? "cr6se" : /ender/i.test(h) ? "ender3" : "generic";
+  : /ender-?\s*5|^e5m(-|$)/i.test(h) ? "ender5max" : /cr-?10/i.test(h) ? "cr10s" : /cr-?6/i.test(h) ? "cr6se" : /ender/i.test(h) ? "ender3" : "generic";
 const CAM_TYPES = {
   creality: "De la impresora (Creality)",
   go2rtc: "Tapo o RTSP (go2rtc)",
@@ -125,7 +133,11 @@ async function scanNetwork(prefix, onStep) {
   const worker = async () => {
     while (next <= 254) {
       const host = `${prefix}.${next++}`, info = await probePrinter(host);
-      if (info) found.push({ host, info });
+      if (info) {
+        let objects = [];
+        try { objects = (await (await fetch(hostUrl(host, PORTS.api, "/printer/objects/list"), { cache: "no-store" })).json()).result.objects; } catch {}
+        found.push({ host, info, model: resolveModel(info.hostname || "", objects) });
+      }
       onStep(++done, found);
     }
   };

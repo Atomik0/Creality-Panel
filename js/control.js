@@ -6,14 +6,15 @@ async function drawChart() {
 }
 function renderChart() {
   const data = chartData;
-  if (!data || !data.extruder || !$("tab-control").classList.contains("on")) return;
+  const tool = activeTool(S), nozzle = data && (data[tool] || data.extruder);
+  if (!nozzle || !$("tab-control").classList.contains("on")) return;
   const cv = $("chart"), dpr = window.devicePixelRatio || 1;
   const w = cv.clientWidth, h = cv.clientHeight;
   if (!w) return;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, w, h);
   const series = [
-    { v: data.extruder.temperatures, c: cssVar("--nozzle") },
+    { v: nozzle.temperatures, c: cssVar("--nozzle") },
     data.heater_bed && { v: data.heater_bed.temperatures, c: cssVar("--bed") },
   ].filter(Boolean);
   const max = Math.max(60, ...series.flatMap(s => s.v)) * 1.1;
@@ -34,7 +35,7 @@ function renderChart() {
     g.stroke(); g.setLineDash([]);
   };
   if (S) {
-    [S.extruder && S.extruder.target, S.heater_bed && S.heater_bed.target].forEach(tg => tg && line([tg, tg], cssVar("--muted"), [4, 4]));
+    [S[tool] && S[tool].target, S.heater_bed && S.heater_bed.target].forEach(tg => tg && line([tg, tg], cssVar("--muted"), [4, 4]));
   }
   series.forEach(s => line(s.v, s.c));
 }
@@ -42,15 +43,18 @@ function renderChart() {
 $("pause").onclick = () => act(() => post("/printer/print/pause"), "Pausando…", "¿Pausar la impresión?");
 $("resume").onclick = () => act(() => post("/printer/print/resume"), "Reanudando…");
 $("cancel").onclick = () => act(() => post("/printer/print/cancel"), "Cancelando…", "¿Cancelar la impresión? No se puede deshacer.");
-$("ledBtn").onclick = () => HW.led &&
-  act(() => gcode(`SET_PIN PIN=${pinName(HW.led)} VALUE=${S && S[HW.led] && S[HW.led].value > 0 ? 0 : 1}`));
+$("ledBtn").onclick = () => {
+  if (!HW.led) return;
+  const v = ledOn(S) ? 0 : 1;
+  act(() => gcode(HW.led.startsWith("led ") ? `SET_LED LED=${pinName(HW.led)} WHITE=${v}` : `SET_PIN PIN=${pinName(HW.led)} VALUE=${v}`));
+};
 
 document.querySelectorAll("[data-heat]").forEach(b => b.onclick = () => {
   const v = b.dataset.src ? Number($(b.dataset.src).value) : Number(b.dataset.val);
   if (!isFinite(v) || v < 0) return toast("Temperatura no válida", true);
-  const heater = b.dataset.heat;
+  const heater = b.dataset.heat === "extruder" ? activeTool(S) : b.dataset.heat;
   act(() => gcode(`SET_HEATER_TEMPERATURE HEATER=${heater} TARGET=${v}`),
-    `${heater === "extruder" ? "Boquilla" : "Cama"} → ${v ? v + " °C" : "apagada"}`);
+    `${heater === "heater_bed" ? "Cama" : HW.tools.length > 1 ? `Cabezal ${toolIndex(heater) + 1}` : "Boquilla"} → ${v ? v + " °C" : "apagada"}`);
 });
 
 function bindSlider(name, cmd) {
