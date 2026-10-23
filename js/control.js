@@ -96,21 +96,44 @@ const extrudeMm = (mm, f) => act(() => gcode(`SAVE_GCODE_STATE NAME=crpanel_e\nM
 $("extrude").onclick = () => extrudeMm(eStep, 300);
 $("retract").onclick = () => extrudeMm(-eStep, 1200);
 
-let estopArm = null;
+let estopArm = null, stopping = false;
 const estopReset = () => { clearTimeout(estopArm); estopArm = null; $("estopBtn").classList.remove("armed"); $("estopBtn").textContent = "PANIC BUTTON"; };
+const withTimeout = (pr, ms) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error("sin respuesta")), ms))]);
+const PANIC_DROP = 50;
+async function lowerBed() {
+  const th = (await get("/printer/objects/query?toolhead")).status.toolhead;
+  if (!th.homed_axes.includes("z")) return false;
+  const z = th.position[2], max = th.axis_maximum ? th.axis_maximum[2] - 2 : z + PANIC_DROP;
+  const target = Math.min(z + PANIC_DROP, max);
+  if (target <= z) return false;
+  await gcode(`G90\nG1 Z${target.toFixed(2)} F900`);
+  return true;
+}
+async function panicStop() {
+  const printing = S && isActive(S.print_stats.state);
+  if (printing) await post("/printer/print/cancel");
+  await gcode("TURN_OFF_HEATERS\nM107");
+  return printing ? lowerBed().catch(() => false) : false;
+}
 $("estopBtn").onclick = async () => {
+  if (stopping) return;
   if (!estopArm) {
     $("estopBtn").classList.add("armed"); $("estopBtn").textContent = "¿Seguro? Pulsa otra vez";
     estopArm = setTimeout(estopReset, 3000);
     return;
   }
   estopReset();
-  try { await post("/printer/emergency_stop"); toast("Parada de emergencia enviada. Usa «Reiniciar firmware» para volver a usar la impresora.", true); }
-  catch (e) {
-    try { await gcode("M112"); toast("Parada de emergencia enviada (M112)", true); }
-    catch { toast("No se pudo enviar la parada de emergencia: " + e.message, true); }
+  stopping = true; $("estopBtn").disabled = true; $("estopBtn").textContent = "Deteniendo…";
+  try {
+    const lowered = await withTimeout(panicStop(), 15000);
+    toast(`Impresión detenida y calentadores apagados${lowered ? `; la cama bajó ${PANIC_DROP} mm` : ""}`, true);
+  } catch (e) {
+    try { await post("/printer/emergency_stop"); toast(`La impresora no respondió (${e.message}): se envió la parada de emergencia. Usa «Reiniciar firmware» para volver a usarla.`, true); }
+    catch { toast("No se pudo detener la impresora: " + e.message, true); }
+  } finally {
+    stopping = false; $("estopBtn").disabled = false; $("estopBtn").textContent = "PANIC BUTTON";
+    setTimeout(poll, 500);
   }
-  setTimeout(poll, 500);
 };
 const restartAct = (path, msg) => act(() => post(path), msg)
   .then(ok => ok && setTimeout(() => (HW.objects.length ? poll() : connect()), 6000));

@@ -27,7 +27,6 @@ NEW="$DEPLOY_PATH.new"
 OLD="$DEPLOY_PATH.old"
 remote() { ssh "${SSH_OPTS[@]}" "$REMOTE" "$@"; }
 
-# ./deploy.sh clave: autoriza tu clave SSH en el servidor (pide la contraseña una sola vez).
 if [[ "${1:-}" == "clave" ]]; then
   KEY="${DEPLOY_KEY:-~/.ssh/id_ed25519}"; KEY="${KEY/#\~/$HOME}"
   if [[ ! -f "$KEY.pub" ]]; then
@@ -56,17 +55,14 @@ if command -v rsync >/dev/null; then
   [[ -n "${DEPLOY_OWNER:-}" ]] && RSYNC_OPTS+=(--chown="$DEPLOY_OWNER")
   rsync "${RSYNC_OPTS[@]}" -e "ssh ${SSH_OPTS[*]}" "${FILES[@]}" "$REMOTE:$NEW/"
 else
-  # Git Bash en Windows no trae rsync: se envía un tar por SSH y los permisos se ajustan allí.
   FIX="find $(printf %q "$NEW") -type d -exec chmod 755 {} + && find $(printf %q "$NEW") -type f -exec chmod 644 {} +"
   [[ -n "${DEPLOY_OWNER:-}" ]] && FIX+=" && chown -R $(printf %q "$DEPLOY_OWNER") $(printf %q "$NEW")"
-  # El uid de Windows no existe en el servidor: los archivos quedan del usuario que los extrae.
   tar -cf - "${FILES[@]}" | remote "tar --no-same-owner -xf - -C $(printf %q "$NEW") && $FIX"
 fi
 
 remote "set -e; if [ -d $(printf %q "$DEPLOY_PATH") ]; then mv $(printf %q "$DEPLOY_PATH") $(printf %q "$OLD"); fi; \
   mv $(printf %q "$NEW") $(printf %q "$DEPLOY_PATH"); rm -rf $(printf %q "$OLD")"
 
-# El sha1sum de Git Bash marca los archivos con " *" (modo binario); el de Linux usa dos espacios.
 LOCAL_SUMS="$(find "${FILES[@]}" -type f -print0 | LC_ALL=C sort -z | xargs -0 sha1sum | sed 's/^\([0-9a-f]*\) \*/\1  /')"
 REMOTE_SUMS="$(remote "cd $(printf %q "$DEPLOY_PATH") && find ${FILES[*]} -type f -print0 | LC_ALL=C sort -z | xargs -0 sha1sum")"
 if [[ "$LOCAL_SUMS" == "$REMOTE_SUMS" ]]; then

@@ -22,7 +22,7 @@ async function watchOne(p) {
       const { objects } = await pget(p, "/printer/objects/list");
       rt.objects = objects;
       rt.head = objects.find(o => /^filament_(switch|motion)_sensor /.test(o)) || null;
-      rt.hasBox = objects.includes("box");
+      if (rt.hasBox !== objects.includes("box")) { rt.hasBox = !rt.hasBox; hubKey = ""; }
       rt.tools = objects.filter(o => /^extruder\d*$/.test(o));
       rt.ptc = objects.includes("print_task_config");
       if (p.model === "auto") { autoModel(p, rt.hostname, objects); savePrinters().catch(() => {}); hubKey = ""; }
@@ -98,14 +98,13 @@ function cfsMini(box, p) {
   const units = connectedUnits(box), label = cfsName(p);
   return units.map(u => {
     const name = label + (units.length > 1 ? " " + u[1] : "");
-    return familyOf(p).cfsLite ? cfsLiteSvg(box, u, name) : cfsBoxSvg(box, u, name);
+    return unitOf(p) === "cfslite" ? cfsLiteSvg(box, u, name) : cfsBoxSvg(box, u, name);
   }).join("");
 }
 
 const svgCache = {};
 let sceneUid = 0;
-async function mountScene(a, p) {
-  const url = familyOf(p).img;
+async function mountScene(a, p, url) {
   if (!(url in svgCache)) svgCache[url] = fetch(url).then(r => (r.ok ? r.text() : null)).catch(() => null);
   const txt = await svgCache[url];
   if (!txt || !a.isConnected) return;
@@ -127,7 +126,7 @@ function layoutHub() {
     if (!p) return;
     const box = a.querySelector(".pimg"), img = a.querySelector(".pimg > img");
     if (p.photo) return img.removeAttribute("style");
-    placeArt(box, a.querySelector(".pscene") || img, familyOf(p).geo);
+    placeArt(box, a.querySelector(".pscene") || img, artOf(p, RT[p.id] && RT[p.id].hasBox).geo);
   });
 }
 function layoutHero() {
@@ -180,11 +179,11 @@ function buildHub() {
         <div class="ptemps"><span><i style="background:var(--nozzle)"></i><span class="tn">—</span></span>
           <span><i style="background:var(--bed)"></i><span class="tb">—</span></span><span class="go">Abrir ›</span></div>
       </div>`;
-    a.querySelector("img").src = printerImg(p);
-    a.classList.toggle("wide", !!familyOf(p).wide && !p.photo);
-    if (familyOf(p).scene && !p.photo) mountScene(a, p);
+    const art = artOf(p, RT[p.id] && RT[p.id].hasBox);
+    a.querySelector("img").src = p.photo ? printerImg(p) : art.img;
+    a.classList.toggle("wide", !!art.wide && !p.photo);
+    if (art.scene && !p.photo) mountScene(a, p, art.img);
     a.querySelector(".pname").textContent = p.name;
-    a.querySelector(".pmodel").textContent = p.model === "auto" ? "Detectando modelo…" : familyOf(p).name;
     a.querySelector(".pedit").onclick = e => { e.stopPropagation(); openPrinterDialog(p); };
     a.onclick = () => (location.hash = `#/p/${p.id}`);
     a.onkeydown = e => { if (e.key === "Enter") a.click(); };
@@ -204,10 +203,11 @@ function renderCard(p) {
   pill.className = "pill " + cs.cls; pill.textContent = cs.text;
   a.classList.toggle("off", !(rt && rt.online));
   const box = st && st.box;
+  a.querySelector(".pmodel").textContent = modelLabel(p, rt && rt.hasBox);
   const mini = a.querySelector(".cfsmini"), scene = a.querySelector(".pscene svg");
   mini.innerHTML = box && !scene ? cfsMini(box, p) : "";
   if (scene) paintScene(scene, sceneSlots(st));
-  mini.classList.toggle("lite", !!familyOf(p).cfsLite);
+  mini.classList.toggle("lite", unitOf(p) === "cfslite");
   mini.classList.toggle("left", !!familyOf(p).cfsLeft);
   a.querySelector(".pimg").classList.toggle("withleft", !!(familyOf(p).cfsLeft && mini.innerHTML));
   const active = st && isActive(cs.state), ps = st && st.print_stats;
@@ -241,7 +241,7 @@ function renderHub() {
   $("hubEmpty").hidden = printers.length > 0;
   $("hubGrid").hidden = !printers.length;
   $("hubAddBtn").hidden = $("hubScanBtn").hidden = !printers.length;
-  const key = printers.map(p => [p.id, p.name, p.model, p.photoV || 0].join("|")).join();
+  const key = printers.map(p => [p.id, p.name, p.model, unitOf(p), p.photoV || 0, RT[p.id] && RT[p.id].hasBox ? 1 : 0].join("|")).join();
   if (key !== hubKey) { buildHub(); hubKey = key; }
   printers.forEach(renderCard);
   layoutHub(); layoutHero();
@@ -308,13 +308,20 @@ function pmPreview() {
     : pmEdit && pmEdit.photo && !(pmPhoto && pmPhoto.remove) ? printerImg(pmEdit) : (FAMILIES[model] || FAMILIES.generic).img;
   $("pmPhotoDel").hidden = !(pmPhoto && pmPhoto.url) && !(pmEdit && pmEdit.photo && !(pmPhoto && pmPhoto.remove));
 }
-function openPrinterDialog(p, preset) {
+function pmUnits(sel) {
+  const list = unitsOf($("pmModel").value);
+  $("pmUnit").innerHTML = list.map(u => `<option value="${u}">${esc(FILAMENT_SYSTEMS[u])}</option>`).join("");
+  $("pmUnit").value = list.includes(sel) ? sel : list[0];
+  $("pmUnitRow").hidden = list.length < 2;
+}
+function openPrinterDialog(p) {
   pmEdit = p; pmPhoto = null;
-  const d = p || { name: "", model: "auto", host: "", cameras: [], ...preset };
+  const d = p || { name: "", model: "auto", host: "", cameras: [] };
   $("pmTitle").textContent = p ? "Editar impresora" : "Agregar impresora";
   $("pmModel").innerHTML = `<option value="auto">Detectar automáticamente</option>` +
     Object.entries(FAMILIES).map(([k, f]) => `<option value="${k}">${esc(f.name)}</option>`).join("");
   $("pmName").value = d.name; $("pmModel").value = d.model; $("pmHost").value = d.host;
+  pmUnits(d.unit);
   $("pmCams").innerHTML = "";
   d.cameras.forEach(camRow);
   $("pmRes").innerHTML = "";
@@ -330,7 +337,7 @@ const pmLine = (ok, text) => {
   d.lastChild.textContent = text;
   $("pmRes").appendChild(d);
 };
-$("pmModel").onchange = pmPreview;
+$("pmModel").onchange = () => { pmUnits($("pmUnit").value); pmPreview(); };
 $("pmPhotoBtn").onclick = () => $("pmPhotoIn").click();
 $("pmPhotoIn").onchange = e => {
   const f = e.target.files[0]; e.target.value = "";
@@ -350,7 +357,10 @@ $("pmTest").onclick = async () => {
   const info = await probePrinter(host, 5000);
   if (!info) return pmLine(false, `No hay Klipper (Moonraker) respondiendo en ${host}`);
   pmLine(true, `Klipper: ${info.hostname} (${STATE_ES[info.state] || info.state})`);
-  if ($("pmModel").value === "auto") pmLine(true, `Modelo detectado: ${familyOf({ model: familyFromHost(info.hostname) }).name}`);
+  const objects = await probeObjects(host, 5000), model = resolveModel(info.hostname, objects);
+  if ($("pmModel").value === "auto") pmLine(true, `Modelo detectado: ${FAMILIES[model].name}`);
+  if (objects.includes("box")) pmLine(true, unitsOf(model).length > 1 ? "Tiene un sistema de filamento conectado: elige arriba si es CFS o CFS-C"
+    : `${FILAMENT_SYSTEMS[unitsOf(model)[0]]} conectado`);
   if (!$("pmName").value.trim()) $("pmName").value = nameFor(info.hostname);
 };
 $("pmSave").onclick = async () => {
@@ -360,6 +370,7 @@ $("pmSave").onclick = async () => {
   const p = pmEdit || { id: newId() };
   const before = pmEdit && JSON.stringify(pmEdit), oldHost = pmEdit && pmEdit.host;
   Object.assign(p, { name: $("pmName").value.trim() || nameFromHost(""), model: $("pmModel").value, host, cameras: readCams() });
+  if ($("pmUnitRow").hidden) delete p.unit; else p.unit = $("pmUnit").value;
   try {
     if (pmPhoto && pmPhoto.file) { p.photo = await putPhoto(p.id, pmPhoto.file); p.photoV = Date.now(); }
     else if (pmPhoto && pmPhoto.remove && p.photo) { deletePhoto(p.photo); delete p.photo; delete p.photoV; }
@@ -418,7 +429,7 @@ $("scGo").onclick = async () => {
     row.innerHTML = `<input type="checkbox" ${known ? "disabled" : "checked"}><img alt=""><span><b></b><span class="muted"></span></span>`;
     row.querySelector("img").src = FAMILIES[model].img;
     row.querySelector("b").textContent = scanName(f);
-    row.querySelector(".muted").textContent = `${FAMILIES[model].name} · ${f.host}${known ? ` · ya agregada como "${known.name}"` : ""}`;
+    row.querySelector(".muted").textContent = `${FAMILIES[model].name}${f.hasBox ? ` + ${FILAMENT_SYSTEMS[unitsOf(model)[0]]}` : ""} · ${f.host}${known ? ` · ya agregada como "${known.name}"` : ""}`;
     row.querySelector("input").onchange = () => ($("scAdd").disabled = !document.querySelector("#scList input:checked"));
     f.row = row;
     $("scList").appendChild(row);

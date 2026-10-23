@@ -1,5 +1,4 @@
 @echo off
-rem Publica el panel en el servidor desde Windows: busca Git Bash y ejecuta deploy.sh.
 setlocal
 chcp 65001 >nul
 cd /d "%~dp0"
@@ -29,7 +28,6 @@ findstr /c:"IP_DEL_SERVIDOR" ".deploy.env" >nul && (
 )
 
 "%GITBASH%" ./deploy.sh
-rem deploy.sh sale con 3 cuando el servidor no acepta la clave SSH.
 if errorlevel 3 (
   echo.
   choice /c SN /m "¿Autorizar tu clave SSH en el servidor ahora? Te pedirá la contraseña una vez"

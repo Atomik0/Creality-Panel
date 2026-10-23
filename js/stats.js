@@ -149,8 +149,10 @@ function taskProgress(t) {
 async function renderMaintenance() {
   if (!tasks) tasks = await dbGet("maintenance", DEFAULT_TASKS);
   $("mtStore").textContent = dbShared ? "Guardado en la impresora (compartido entre dispositivos)" : "Guardado solo en este navegador";
-  $("mtList").innerHTML = tasks.length ? "" : '<div class="muted">Sin tareas.</div>';
+  const shown = tasks.filter(t => t.unit !== "cuts" || HW.cutter);
+  $("mtList").innerHTML = shown.length ? "" : '<div class="muted">Sin tareas.</div>';
   tasks.forEach((t, idx) => {
+    if (!shown.includes(t)) return;
     const p = taskProgress(t), ratio = p / t.every;
     const d = document.createElement("div");
     d.className = "mt" + (ratio >= 1 ? " due" : ratio >= 0.8 ? " soon" : "");

@@ -6,6 +6,7 @@ function applyHardwareUi() {
   $("tlTabBtn").hidden = !familyOf(P).timelapse;
   if ($("tlTabBtn").hidden && $("tab-timelapse").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
   if (!HW.box && $("tab-cfs").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
+  markCfsOptions();
   $("toolsTabBtn").hidden = HW.tools.length < 2;
   if ($("toolsTabBtn").hidden && $("tab-tools").classList.contains("on")) document.querySelector('.tabs [data-tab="control"]').click();
   toolsKey = "";

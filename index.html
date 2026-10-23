@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impresoras</title>
-  <script src="js/theme.js?v=20"></script>
-  <link rel="stylesheet" href="css/panel.css?v=20">
+  <script src="js/theme.js?v=22"></script>
+  <link rel="stylesheet" href="css/panel.css?v=22">
 </head>
 
 <body>
@@ -102,7 +102,7 @@
         </div>
         <span class="pill" id="pill">Conectando</span>
         <div class="hright">
-          <button class="estop" id="estopBtn" title="Parada de emergencia (M112): detiene todo al instante">PANIC
+          <button class="estop" id="estopBtn" title="Cancela la impresión, apaga los calentadores y baja la cama">PANIC
             BUTTON</button>
           <button class="icon" id="editPrinterBtn" title="Editar impresora" aria-label="Editar impresora">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
@@ -708,6 +708,8 @@
           <div class="field"><label for="pmName">Nombre</label><input type="text" id="pmName"
               placeholder="Por ejemplo, K1 SE del taller"></div>
           <div class="field"><label for="pmModel">Modelo</label><select id="pmModel"></select></div>
+          <div class="field" id="pmUnitRow"><label for="pmUnit">Sistema de filamento, si tiene uno conectado</label><select
+              id="pmUnit"></select></div>
           <div class="field"><label for="pmHost">IP de la impresora</label><input type="text" id="pmHost"
               spellcheck="false" placeholder="192.168.1.x"></div>
         </div>
@@ -750,19 +752,19 @@
 
   <div class="toasts" id="toasts"></div>
 
-  <script src="js/core.js?v=20"></script>
-  <script src="js/printers.js?v=20"></script>
-  <script src="js/status.js?v=20"></script>
-  <script src="js/control.js?v=20"></script>
-  <script src="js/cfs.js?v=20"></script>
-  <script src="js/tools.js?v=20"></script>
-  <script src="js/files.js?v=20"></script>
-  <script src="js/stats.js?v=20"></script>
-  <script src="js/tabs.js?v=20"></script>
-  <script src="js/notify.js?v=20"></script>
-  <script src="js/camera.js?v=20"></script>
-  <script src="js/hub.js?v=20"></script>
-  <script src="js/main.js?v=20"></script>
+  <script src="js/core.js?v=22"></script>
+  <script src="js/printers.js?v=22"></script>
+  <script src="js/status.js?v=22"></script>
+  <script src="js/control.js?v=22"></script>
+  <script src="js/cfs.js?v=22"></script>
+  <script src="js/tools.js?v=22"></script>
+  <script src="js/files.js?v=22"></script>
+  <script src="js/stats.js?v=22"></script>
+  <script src="js/tabs.js?v=22"></script>
+  <script src="js/notify.js?v=22"></script>
+  <script src="js/camera.js?v=22"></script>
+  <script src="js/hub.js?v=22"></script>
+  <script src="js/main.js?v=22"></script>
 </body>
 
 </html>

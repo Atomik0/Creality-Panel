@@ -122,12 +122,13 @@ $("smYes").onclick = () => {
                   `BOX_MODIFY_TN_DATA ADDR=${s.n} NUM=${s.L} PART=color_value DATA=0${hex}`), `Ranura ${slotLabel(s)} actualizada`);
 };
 
+const segKey = seg => `${seg.dataset.key}_${P ? P.id : ""}`;
+const markSeg = seg => seg.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === store.get(segKey(seg), null)));
+const markCfsOptions = () => document.querySelectorAll(".seg[data-cmd]").forEach(markSeg);
 document.querySelectorAll(".seg[data-cmd]").forEach(seg => {
-  const mark = v => seg.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
-  mark(store.get(seg.dataset.key, null));
   seg.onclick = e => {
     const b = e.target.closest("button"); if (!b) return;
-    act(() => gcode(seg.dataset.cmd + b.dataset.v), "Opción del CFS actualizada")
-      .then(ok => { if (ok) { store.set(seg.dataset.key, b.dataset.v); mark(b.dataset.v); } });
+    act(() => gcode(seg.dataset.cmd + b.dataset.v), `Opción del ${cfsName(P)} actualizada`)
+      .then(ok => { if (ok) { store.set(segKey(seg), b.dataset.v); markSeg(seg); } });
   };
 });

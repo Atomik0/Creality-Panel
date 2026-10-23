@@ -47,8 +47,6 @@ async function doPoll() {
   $("eta").textContent = remain ? "Termina aprox. a las " + new Date(Date.now() + remain * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : (STATE_ES[state] || "");
   const info = ps.info || {};
   const totalLayers = info.total_layer || (meta && meta.layer_count) || 0;
-  // Klipper no cuenta print_duration ni filament_used hasta la primera extrusión:
-  // mientras calienta/hace home la Z no corresponde a ninguna capa.
   const started = ps.print_duration > 0 || ps.filament_used > 0;
   let layer = sd.layer || 0;
   if (!started) layer = 0;

@@ -1,4 +1,4 @@
-let pc = null, mse = null, camGen = 0, camTimer = 0;
+let pc = null, mse = null, camGen = 0, camTimer = 0, msUrl = "";
 const camList = () => (P && P.cameras) || [];
 const camKey = () => `crpanel_cam_${P && P.id}`;
 const currentCam = () => {
@@ -19,6 +19,7 @@ function stopCamera() {
   if (mse) { mse.ws.onclose = null; mse.ws.close(); mse = null; }
   const v = $("video");
   v.pause(); v.srcObject = null; v.removeAttribute("src"); v.load();
+  if (msUrl) { URL.revokeObjectURL(msUrl); msUrl = ""; }
   $("mjpeg").onload = $("mjpeg").onerror = null;
   $("mjpeg").removeAttribute("src"); $("mjpeg").hidden = true;
   $("liveTag").hidden = true;
@@ -102,7 +103,7 @@ function startGo2rtc(cam) {
   if (!MS) return camMsg("Este navegador no puede reproducir esta cámara.");
   const gen = camGen, video = $("video"), ms = new MS();
   if (window.ManagedMediaSource) { video.disableRemotePlayback = true; video.srcObject = ms; }
-  else video.src = URL.createObjectURL(ms);
+  else video.src = msUrl = URL.createObjectURL(ms);
   ms.addEventListener("sourceopen", () => {
     if (gen !== camGen) return;
     const ws = new WebSocket(`${WS_PROTO}://${location.host}/go2rtc/api/ws?src=${encodeURIComponent(cam.src)}`);
