@@ -317,7 +317,7 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=22`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=23`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
 
 Para subir los cambios al servidor está `deploy.sh`. La primera vez, copia la configuración de ejemplo y pon los datos de tu servidor:
 
