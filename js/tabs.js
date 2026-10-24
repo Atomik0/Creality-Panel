@@ -53,26 +53,41 @@ async function loadTimelapses() {
     return;
   }
   $("tls").innerHTML = "";
-  for (const t of list) {
+  const items = list.map(t => {
     const file = t.videoname || String(t.video || "").split("/").pop();
-    const url = `${webUrl}/downloads/video/${encodeURIComponent(file)}`;
-    const d = document.createElement("div");
-    d.className = "tl";
-    d.innerHTML = `<video controls preload="metadata" src="${esc(url)}"></video>
-      <div class="info"><div class="n"></div><div class="muted" style="font-size:12px"></div>
-      <a target="_blank" rel="noopener">Abrir / descargar</a></div>`;
-    const name = t.gcodename || file;
-    d.querySelector(".n").textContent = name; d.querySelector(".n").title = name;
     const parts = [];
     if (t.starttime) parts.push(new Date(t.starttime * 1000).toLocaleString([], { dateStyle: "short", timeStyle: "short" }));
     if (t.duration) parts.push(`${t.duration} s de vídeo`);
-    if (t.printtime) parts.push(`impresión ${fmtDur(t.printtime)}`);
     if (t.size) parts.push((t.size / 1048576).toFixed(1) + " MB");
-    d.querySelector(".muted").textContent = parts.join(" · ");
-    d.querySelector("a").href = url;
+    return { file, name: t.gcodename || file, sub: parts.join(" · "), fps: t.render, duration: t.duration,
+             url: `${webUrl}/downloads/video/${encodeURIComponent(file)}` };
+  });
+  items.forEach((t, i) => {
+    const d = document.createElement("div");
+    d.className = "tl";
+    d.innerHTML = `<div class="tlthumb" role="button" tabindex="0" aria-label="Reproducir">
+        <video muted playsinline preload="metadata"></video><span class="pi">${ICONS.play}</span><span class="dur"></span></div>
+      <div class="info"><div style="min-width:0"><div class="n"></div><div class="muted" style="font-size:12px"></div></div>
+      <button class="icon" aria-label="Descargar vídeo" title="Descargar vídeo">${ICONS.dl}</button></div>`;
+    d.querySelector(".n").textContent = t.name; d.querySelector(".n").title = t.name;
+    d.querySelector(".muted").textContent = t.sub;
+    d.querySelector(".dur").textContent = t.duration ? fmtClock(t.duration).replace(/\.\d$/, "") : "";
+    const v = d.querySelector("video");
+    v.dataset.src = t.url;
+    v.onloadedmetadata = () => { if (isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - 0.05); };
+    tlThumbs.observe(v);
+    const th = d.querySelector(".tlthumb");
+    th.onclick = () => openPlayer(items, i);
+    th.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPlayer(items, i); } };
+    d.querySelector("button").onclick = () => saveFile(t.url, t.file);
     $("tls").appendChild(d);
-  }
+  });
 }
+const tlThumbs = new IntersectionObserver(entries => entries.forEach(e => {
+  if (!e.isIntersecting) return;
+  tlThumbs.unobserve(e.target);
+  e.target.src = e.target.dataset.src;
+}), { rootMargin: "200px" });
 $("tlRefresh").onclick = loadTimelapses;
 
 let lastConsoleTime = 0;

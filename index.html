@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impresoras</title>
-  <script src="js/theme.js?v=24"></script>
-  <link rel="stylesheet" href="css/panel.css?v=24">
+  <script src="js/theme.js?v=25"></script>
+  <link rel="stylesheet" href="css/panel.css?v=25">
 </head>
 
 <body>
@@ -692,6 +692,38 @@
       <div class="sub2" id="lbSub"></div>
     </div>
   </div>
+  <div class="modal player" id="player" role="dialog" aria-modal="true" aria-labelledby="pvName">
+    <div class="pv-frame" id="pvFrame">
+      <div class="pv-head">
+        <div style="min-width:0">
+          <div class="pv-name" id="pvName"></div>
+          <div class="pv-sub"><span id="pvSub"></span> <span id="pvPos"></span></div>
+        </div>
+        <button class="icon" id="pvClose" aria-label="Cerrar" title="Cerrar (Esc)">✕</button>
+      </div>
+      <div class="pv-stage">
+        <video id="pvVideo" playsinline muted></video>
+        <button class="pv-nav prev" id="pvPrev" aria-label="Timelapse anterior" title="Anterior (Re Pág)"></button>
+        <button class="pv-nav next" id="pvNext" aria-label="Timelapse siguiente" title="Siguiente (Av Pág)"></button>
+        <button class="pv-big" id="pvBig" aria-label="Reproducir"></button>
+        <div class="pv-msg" id="pvMsg" hidden></div>
+      </div>
+      <div class="pv-bar">
+        <input type="range" id="pvSeek" min="0" max="1000" value="0" aria-label="Posición">
+        <div class="pv-ctl">
+          <button class="icon" id="pvPlay" aria-label="Reproducir" title="Reproducir o pausar (espacio)"></button>
+          <button class="icon pv-step" id="pvBack" aria-label="Fotograma anterior" title="Fotograma anterior (,)"></button>
+          <button class="icon pv-step" id="pvFwd" aria-label="Fotograma siguiente" title="Fotograma siguiente (.)"></button>
+          <span class="pv-time" id="pvTime">0:00.0 / 0:00.0</span>
+          <span style="flex:1"></span>
+          <button id="pvSpeed" class="pv-speed" aria-label="Velocidad" title="Velocidad (S)">2×</button>
+          <button class="icon" id="pvLoop" aria-label="Repetir" title="Repetir (L)"></button>
+          <button class="icon" id="pvDl" aria-label="Descargar vídeo" title="Descargar vídeo"></button>
+          <button class="icon" id="pvFull" aria-label="Pantalla completa" title="Pantalla completa (F)"></button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal" id="printerModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
     <div class="box settings">
       <h3 id="pmTitle" style="margin:0 0 16px;font-size:17px">Agregar impresora</h3>
@@ -752,19 +784,20 @@
 
   <div class="toasts" id="toasts"></div>
 
-  <script src="js/core.js?v=24"></script>
-  <script src="js/printers.js?v=24"></script>
-  <script src="js/status.js?v=24"></script>
-  <script src="js/control.js?v=24"></script>
-  <script src="js/cfs.js?v=24"></script>
-  <script src="js/tools.js?v=24"></script>
-  <script src="js/files.js?v=24"></script>
-  <script src="js/stats.js?v=24"></script>
-  <script src="js/tabs.js?v=24"></script>
-  <script src="js/notify.js?v=24"></script>
-  <script src="js/camera.js?v=24"></script>
-  <script src="js/hub.js?v=24"></script>
-  <script src="js/main.js?v=24"></script>
+  <script src="js/core.js?v=25"></script>
+  <script src="js/printers.js?v=25"></script>
+  <script src="js/status.js?v=25"></script>
+  <script src="js/control.js?v=25"></script>
+  <script src="js/cfs.js?v=25"></script>
+  <script src="js/tools.js?v=25"></script>
+  <script src="js/files.js?v=25"></script>
+  <script src="js/stats.js?v=25"></script>
+  <script src="js/tabs.js?v=25"></script>
+  <script src="js/player.js?v=25"></script>
+  <script src="js/notify.js?v=25"></script>
+  <script src="js/camera.js?v=25"></script>
+  <script src="js/hub.js?v=25"></script>
+  <script src="js/main.js?v=25"></script>
 </body>
 
 </html>

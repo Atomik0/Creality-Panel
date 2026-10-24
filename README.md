@@ -31,7 +31,7 @@ No necesita compilación: son archivos HTML, CSS y JavaScript. Para varias impre
 - **CFS:** estado de las ranuras (material, color y restante con RFID), carga y descarga de filamento, edición de material y color, recorrido del filamento, temperatura y humedad, y sus opciones (recarga automática, cambio automático de ranura, precarga).
 - **Nivelación:** mapa de color de la malla de la cama con el punto más bajo, el más alto y la diferencia total.
 - **Archivos:** lista de G-code con miniatura, tiempo, peso y material, búsqueda, descarga y subida por arrastrar y soltar.
-- **Timelapses:** reproducción y descarga de los vídeos que graban las K1.
+- **Timelapses:** cada vídeo muestra su último fotograma (la pieza terminada) y se descarga con un botón. Se abren en un reproductor propio con barra de posición, avance fotograma a fotograma, velocidades de 0,25× a 4×, repetición, pantalla completa, paso al timelapse anterior o siguiente y atajos de teclado (espacio, ← →, coma y punto, S, L, F, Re Pág y Av Pág, Esc).
 - **Estadísticas:** horas de impresión, trabajos, tasa de éxito, filamento usado y coste estimado, horas por día de los últimos 30 días, consumo por material y colores más usados.
 - **Mantenimiento:** tareas con aviso por horas de impresión, días o cortes del CFS, guardadas en cada impresora.
 - **Consola e historial:** envío de G-code con historial de comandos, y últimos trabajos con botones para descargar el G-code y volver a imprimirlo (si el archivo sigue en la impresora).
@@ -305,6 +305,7 @@ Creality-Panel/
 │   ├── files.js        Lista y subida de archivos
 │   ├── stats.js        Estadísticas, mantenimiento y base de datos de Moonraker
 │   ├── tabs.js         Nivelación, timelapses, consola, historial, pestañas y vista ampliada
+│   ├── player.js       Reproductor de timelapses y descarga de vídeos
 │   ├── notify.js       Detección de eventos de cada impresora y envío de avisos
 │   ├── camera.js       Cámaras de Creality, go2rtc y MJPEG, y selector entre ellas
 │   ├── hub.js          Hub, vigilancia de todas las impresoras y diálogos de agregar, editar y buscar
@@ -317,7 +318,7 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=24`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=25`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
 
 Para subir los cambios al servidor está `deploy.sh`. La primera vez, copia la configuración de ejemplo y pon los datos de tu servidor:
 
