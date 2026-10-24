@@ -41,11 +41,42 @@ function wsGet(key) {
     ws.onerror = () => { clearTimeout(timer); reject(new Error("sin conexión")); };
   });
 }
+function wsSet(paramsList) {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(wsUrl);
+    const timer = setTimeout(() => { ws.close(); reject(new Error("sin respuesta")); }, 8000);
+    ws.onopen = () => {
+      paramsList.forEach(params => ws.send(JSON.stringify({ method: "set", params })));
+      setTimeout(() => { clearTimeout(timer); ws.close(); resolve(); }, 600);
+    };
+    ws.onerror = () => { clearTimeout(timer); reject(new Error("sin conexión")); };
+  });
+}
+
+const TL_FAILED = ["cancelled", "error", "klippy_shutdown", "interrupted", "server_exit"];
+async function deleteTimelapses(items, what) {
+  const n = items.length;
+  what = what || (n === 1 ? `el timelapse de "${items[0].name}"` : `${n} timelapses`);
+  if (!(await confirmBox(`¿Borrar ${what} de la impresora? No se puede deshacer.`))) return;
+  try {
+    await wsSet(items.map(t => ({ ctrlVideoFiles: { cmd: "remove", printId: "", file: t.path } })));
+    await new Promise(r => setTimeout(r, 800));
+    const left = (await wsGet("reqElapseVideoList")) || [];
+    const kept = items.filter(t => left.some(x => x.video === t.path)).length;
+    if (kept) toast(kept === n ? "La impresora no borró el timelapse" : `No se pudieron borrar ${kept} de ${n} timelapses`, true);
+    else toast(n === 1 ? "Timelapse borrado" : `${n} timelapses borrados`);
+  } catch (e) { toast("No se pudo borrar: " + e.message, true); }
+  loadTimelapses();
+}
+
 async function loadTimelapses() {
   $("tls").innerHTML = '<div class="muted">Cargando…</div>';
-  let list;
-  try { list = await wsGet("reqElapseVideoList"); }
-  catch (e) { $("tls").innerHTML = `<div class="muted">No se pudo leer la lista (${esc(e.message)}).</div>`; return; }
+  $("tlDelFailed").hidden = true;
+  let list, jobs = [];
+  try {
+    [list, jobs] = await Promise.all([wsGet("reqElapseVideoList"),
+      get("/server/history/list?limit=500&order=desc").then(r => r.jobs).catch(() => [])]);
+  } catch (e) { $("tls").innerHTML = `<div class="muted">No se pudo leer la lista (${esc(e.message)}).</div>`; return; }
   list = (list || []).slice().sort((a, b) => (b.starttime || 0) - (a.starttime || 0));
   $("tlCount").textContent = list.length ? `${list.length} timelapse${list.length > 1 ? "s" : ""}` : "";
   if (!list.length) {
@@ -59,35 +90,48 @@ async function loadTimelapses() {
     if (t.starttime) parts.push(new Date(t.starttime * 1000).toLocaleString([], { dateStyle: "short", timeStyle: "short" }));
     if (t.duration) parts.push(`${t.duration} s de vídeo`);
     if (t.size) parts.push((t.size / 1048576).toFixed(1) + " MB");
-    return { file, name: t.gcodename || file, sub: parts.join(" · "), fps: t.render, duration: t.duration,
-             url: `${webUrl}/downloads/video/${encodeURIComponent(file)}` };
+    const job = jobs.find(j => j.filename === t.gcodename && Math.abs(j.start_time - t.starttime) < 120);
+    const th = job && job.exists && bestThumb(job.metadata && job.metadata.thumbnails);
+    const base = (t.gcodename || "").replace(/\.gcode$/i, "");
+    return { file, path: t.video, name: t.gcodename || file, sub: parts.join(" · "), fps: t.render, duration: t.duration,
+             status: job ? job.status : null, url: `${webUrl}/downloads/video/${encodeURIComponent(file)}`,
+             thumb: th ? thumbUrl(job.filename, th.relative_path) : base ? `${webUrl}/downloads/humbnail/${encodeURIComponent(base + ".png")}` : "" };
   });
+  const failed = items.filter(t => TL_FAILED.includes(t.status));
+  $("tlDelFailed").hidden = !failed.length;
+  $("tlDelFailed").textContent = `Borrar fallidos (${failed.length})`;
+  $("tlDelFailed").onclick = () => deleteTimelapses(failed, failed.length === 1 ? "el timelapse de la impresión fallida" : `los ${failed.length} timelapses de impresiones canceladas o fallidas`);
   items.forEach((t, i) => {
     const d = document.createElement("div");
     d.className = "tl";
     d.innerHTML = `<div class="tlthumb" role="button" tabindex="0" aria-label="Reproducir">
-        <video muted playsinline preload="metadata"></video><span class="pi">${ICONS.play}</span><span class="dur"></span></div>
+        <img alt="" loading="lazy"><span class="pi">${ICONS.play}</span><span class="dur"></span></div>
       <div class="info"><div style="min-width:0"><div class="n"></div><div class="muted" style="font-size:12px"></div></div>
-      <button class="icon" aria-label="Descargar vídeo" title="Descargar vídeo">${ICONS.dl}</button></div>`;
+      <div class="acts"><button class="icon" aria-label="Descargar vídeo" title="Descargar vídeo">${ICONS.dl}</button>
+      <button class="icon danger" aria-label="Borrar timelapse" title="Borrar timelapse">${ICONS.trash}</button></div></div>`;
     d.querySelector(".n").textContent = t.name; d.querySelector(".n").title = t.name;
     d.querySelector(".muted").textContent = t.sub;
     d.querySelector(".dur").textContent = t.duration ? fmtClock(t.duration).replace(/\.\d$/, "") : "";
-    const v = d.querySelector("video");
-    v.dataset.src = t.url;
-    v.onloadedmetadata = () => { if (isFinite(v.duration)) v.currentTime = Math.max(0, v.duration - 0.05); };
-    tlThumbs.observe(v);
+    if (t.status && t.status !== "completed") {
+      const s = document.createElement("span");
+      s.className = `pill tlst ${t.status === "in_progress" ? "printing" : TL_FAILED.includes(t.status) ? "cancelled" : ""}`;
+      s.textContent = STATE_ES[t.status] || t.status;
+      d.querySelector(".tlthumb").appendChild(s);
+    }
+    const img = d.querySelector("img");
+    img.onerror = () => img.remove();
+    if (t.thumb) img.src = t.thumb; else img.remove();
     const th = d.querySelector(".tlthumb");
     th.onclick = () => openPlayer(items, i);
     th.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPlayer(items, i); } };
-    d.querySelector("button").onclick = () => saveFile(t.url, t.file);
+    const [dl, del] = d.querySelectorAll(".acts button");
+    dl.onclick = () => saveFile(t.url, t.file);
+    del.disabled = t.status === "in_progress";
+    if (del.disabled) del.title = "Se está grabando: espera a que termine la impresión";
+    del.onclick = () => deleteTimelapses([t]);
     $("tls").appendChild(d);
   });
 }
-const tlThumbs = new IntersectionObserver(entries => entries.forEach(e => {
-  if (!e.isIntersecting) return;
-  tlThumbs.unobserve(e.target);
-  e.target.src = e.target.dataset.src;
-}), { rootMargin: "200px" });
 $("tlRefresh").onclick = loadTimelapses;
 
 let lastConsoleTime = 0;
