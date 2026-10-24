@@ -222,6 +222,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .hist .fc img, .hist .fc .nothumb { width: 40px; height: 40px; object-fit: contain; background: var(--panel-3); border-radius: 6px; flex: none; }
 .hist .fc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hist td:last-child { text-align: right; white-space: nowrap; }
+.acts { display: inline-flex; align-items: center; gap: 6px; }
 .tblwrap { overflow-x: auto; }
 
 .modal { position: fixed; inset: 0; background: var(--overlay); display: none; place-items: center; z-index: 50; padding: 16px; }

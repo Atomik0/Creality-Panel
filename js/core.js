@@ -95,6 +95,17 @@ const thumbUrl = (file, rel) => {
   return `${api}/server/files/gcodes/${encodeURI(dir + rel)}`;
 };
 const bestThumb = list => (list || []).slice().sort((a, b) => b.width - a.width)[0];
+const gcodeUrl = file => `${api}/server/files/gcodes/${file.split("/").map(encodeURIComponent).join("/")}`;
+function downloadBtn(file, exists = true) {
+  const b = document.createElement("button");
+  b.className = "icon";
+  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>';
+  b.title = exists ? "Descargar gcode" : "El archivo ya no está en la impresora";
+  b.setAttribute("aria-label", "Descargar gcode");
+  b.disabled = !exists;
+  b.onclick = () => Object.assign(document.createElement("a"), { href: gcodeUrl(file), download: file.split("/").pop() }).click();
+  return b;
+}
 
 async function get(path) {
   const r = await fetch(api + path, { cache: "no-store" });

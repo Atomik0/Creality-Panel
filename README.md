@@ -30,11 +30,11 @@ No necesita compilación: son archivos HTML, CSS y JavaScript. Para varias impre
 - **Cabezales (Snapmaker U1):** los cuatro cabezales con su temperatura, el material y el color de cada carrete (leídos por RFID), cuál está en uso y botón para cambiar de cabezal fuera de impresión. La tarjeta de temperatura del Control usa el cabezal activo.
 - **CFS:** estado de las ranuras (material, color y restante con RFID), carga y descarga de filamento, edición de material y color, recorrido del filamento, temperatura y humedad, y sus opciones (recarga automática, cambio automático de ranura, precarga).
 - **Nivelación:** mapa de color de la malla de la cama con el punto más bajo, el más alto y la diferencia total.
-- **Archivos:** lista de G-code con miniatura, tiempo, peso y material, búsqueda y subida por arrastrar y soltar.
+- **Archivos:** lista de G-code con miniatura, tiempo, peso y material, búsqueda, descarga y subida por arrastrar y soltar.
 - **Timelapses:** reproducción y descarga de los vídeos que graban las K1.
 - **Estadísticas:** horas de impresión, trabajos, tasa de éxito, filamento usado y coste estimado, horas por día de los últimos 30 días, consumo por material y colores más usados.
 - **Mantenimiento:** tareas con aviso por horas de impresión, días o cortes del CFS, guardadas en cada impresora.
-- **Consola e historial:** envío de G-code con historial de comandos, y últimos trabajos con botón para volver a imprimir.
+- **Consola e historial:** envío de G-code con historial de comandos, y últimos trabajos con botones para descargar el G-code y volver a imprimirlo (si el archivo sigue en la impresora).
 - **Avisos:** al terminar, al fallar o cancelarse, al pausarse o agotarse el filamento, cuando faltan 10 minutos y cuando una temperatura llega a su objetivo. Llegan como aviso del navegador con sonido y, opcionalmente, al móvil por ntfy o Telegram.
 
 ## Capturas
@@ -317,7 +317,7 @@ Los scripts son JavaScript normal (no módulos), cargados en ese orden desde `in
 
 ### Publicar cambios
 
-`index.html` carga el CSS y los scripts con un número de versión al final (`?v=23`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
+`index.html` carga el CSS y los scripts con un número de versión al final (`?v=24`). Al cambiar cualquiera de ellos, sube ese número en todas las etiquetas para que los navegadores no sigan usando la versión guardada en caché.
 
 Para subir los cambios al servidor está `deploy.sh`. La primera vez, copia la configuración de ejemplo y pon los datos de tu servidor:
 

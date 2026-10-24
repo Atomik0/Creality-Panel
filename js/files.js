@@ -22,11 +22,12 @@ function renderFiles() {
     parts.push(new Date(f.modified * 1000).toLocaleDateString());
     d.innerHTML = `${th ? `<img alt="" src="${esc(thumbUrl(f.filename, th.relative_path))}">` : '<div class="nothumb"></div>'}
       <div style="min-width:0"><div class="n"></div><div class="d"></div></div>
-      <button class="primary" ${printing ? "disabled" : ""}>Imprimir</button>`;
+      <div class="acts"><button class="primary" ${printing ? "disabled" : ""}>Imprimir</button></div>`;
     d.querySelector(".n").textContent = f.filename;
     d.querySelector(".n").title = f.filename;
     d.querySelector(".d").textContent = parts.join(" · ");
-    d.querySelector("button").onclick = () => act(() => post(`/printer/print/start?filename=${encodeURIComponent(f.filename)}`),
+    d.querySelector(".acts").prepend(downloadBtn(f.filename));
+    d.querySelector(".primary").onclick = () => act(() => post(`/printer/print/start?filename=${encodeURIComponent(f.filename)}`),
       "Impresión iniciada", `¿Imprimir "${f.filename}"? Comprueba que la cama esté libre.`);
     $("files").appendChild(d);
   }

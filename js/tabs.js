@@ -136,7 +136,10 @@ async function loadHistory() {
       btn.title = j.exists ? "" : "El archivo ya no está en la impresora";
       btn.onclick = () => act(() => post(`/printer/print/start?filename=${encodeURIComponent(j.filename)}`),
         "Impresión iniciada", `¿Volver a imprimir "${j.filename}"? Comprueba que la cama esté libre${HW.box ? ` y que el ${cfsName(P)} tenga los colores correctos` : ""}.`);
-      c[5].appendChild(btn);
+      const acts = document.createElement("div");
+      acts.className = "acts";
+      acts.append(downloadBtn(j.filename, j.exists), btn);
+      c[5].appendChild(acts);
       c[1].innerHTML = `<span class="pill ${esc(j.status === "completed" ? "complete" : j.status === "in_progress" ? "printing" : j.status)}">${esc(STATE_ES[j.status] || j.status)}</span>`;
       c[2].textContent = `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
       c[3].textContent = j.print_duration ? fmtDur(j.print_duration) : "—";
